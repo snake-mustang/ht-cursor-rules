@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Build output
+out/
+dist/
+
+# VS Code
+.vscode/
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Package files
+*.vsix
+
+# Temporary files
+*.tmp
+*.temp

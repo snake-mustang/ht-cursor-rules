@@ -1,0 +1,86 @@
+{
+  "name": "ht-cursor-rules",
+  "displayName": "HT Cursor Rules",
+  "description": "快速配置 Cursor AI 编程助手规则，提供 24 种精选规则模板，7 大核心类别：前端、后端、移动、游戏、测试等",
+  "version": "1.0.0",
+  "publisher": "HUANGTONG",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Other",
+    "Snippets"
+  ],
+  "keywords": [
+    "cursor",
+    "ai",
+    "rules",
+    "template",
+    "python",
+    "react",
+    "vue",
+    "angular",
+    "nextjs",
+    "svelte",
+    "flutter",
+    "typescript",
+    "frontend",
+    "backend",
+    "mobile",
+    "game",
+    "unity",
+    "unreal",
+    "cocos",
+    "laya",
+    "testing",
+    "ios",
+    "android"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ht-cursor-rules.addRules",
+        "title": "HT: 添加 Cursor 规则文件"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "ht-cursor-rules.addRules",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.93.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vscode/test-electron": "^2.3.0",
+    "@vscode/vsce": "^2.19.0",
+    "eslint": "^8.45.0",
+    "typescript": "^5.1.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/ht-cursor-rules.git"
+  },
+  "license": "MIT",
+  "icon": "icon.png"
+}
+

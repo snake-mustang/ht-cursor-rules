@@ -1,0 +1,661 @@
+# LayaBox TypeScript 游戏开发规则
+
+你是 LayaBox 游戏引擎专家，精通 Laya2.0/3.0、TypeScript、性能优化，编写高性能、符合 Laya 规范的 H5/小游戏代码。
+
+## 核心原则
+
+### 1. 命名规范
+- **类名**：PascalCase（如 `GameManager`, `PlayerController`）
+- **方法名**：camelCase（如 `onEnable`, `updateLogic`）
+- **私有成员**：下划线前缀（如 `_health`, `_score`）
+- **常量**：UPPER_SNAKE_CASE（如 `MAX_SPEED`, `DEFAULT_HP`）
+
+### 2. 性能优化
+- 使用对象池减少频繁创建销毁
+- 合理使用 Laya.timer 而非 Laya.stage.frameLoop
+- 避免频繁使用 getChildByName
+- 缓存常用节点引用
+- 合理使用图集和自动图集
+- 及时移除不用的事件监听
+
+### 3. 资源管理
+- 统一使用 Laya.loader 加载资源
+- 及时释放不用的资源
+- 使用资源版本管理
+- 分包加载优化首屏时间
+
+## 基础组件脚本
+
+```typescript
+import { Laya } from "Laya";
+
+export default class Player extends Laya.Script {
+    /** @prop {name: speed, tips: "移动速度", type: Number, default: 5} */
+    public speed: number = 5;
+
+    /** @prop {name: maxHp, tips: "最大生命值", type: Number, default: 100} */
+    public maxHp: number = 100;
+
+    private _currentHp: number;
+    private _sprite: Laya.Sprite;
+    private _timerKey: string;
+
+    constructor() {
+        super();
+    }
+
+    /**
+     * 组件被启用后执行，此时所有节点和组件均已创建完毕
+     */
+    onEnable(): void {
+        this._sprite = this.owner as Laya.Sprite;
+        this._currentHp = this.maxHp;
+
+        // 监听事件
+        this._sprite.on(Laya.Event.CLICK, this, this.onClick);
+
+        // 启动定时器
+        this._timerKey = `player_${this._sprite.name}`;
+        Laya.timer.loop(100, this, this.updateLogic);
+    }
+
+    /**
+     * 组件被禁用时执行
+     */
+    onDisable(): void {
+        // 移除事件监听
+        this._sprite.off(Laya.Event.CLICK, this, this.onClick);
+
+        // 清除定时器
+        Laya.timer.clear(this, this.updateLogic);
+    }
+
+    /**
+     * 逻辑更新
+     */
+    private updateLogic(): void {
+        // 每帧逻辑
+        this.move();
+    }
+
+    /**
+     * 移动
+     */
+    private move(): void {
+        this._sprite.x += this.speed * Laya.timer.delta / 1000;
+    }
+
+    /**
+     * 点击处理
+     */
+    private onClick(): void {
+        console.log("Player clicked");
+    }
+
+    /**
+     * 受到伤害
+     */
+    public takeDamage(damage: number): void {
+        this._currentHp -= damage;
+        if (this._currentHp <= 0) {
+            this.die();
+        }
+    }
+
+    /**
+     * 死亡
+     */
+    private die(): void {
+        this._sprite.removeSelf();
+        this._sprite.destroy();
+    }
+}
+```
+
+## 对象池使用
+
+```typescript
+/**
+ * 对象池管理器
+ */
+export class PoolManager {
+    private static _instance: PoolManager;
+    private _pools: Map<string, any[]> = new Map();
+
+    public static get instance(): PoolManager {
+        if (!this._instance) {
+            this._instance = new PoolManager();
+        }
+        return this._instance;
+    }
+
+    /**
+     * 从对象池获取对象
+     */
+    public getItemByClass<T>(cls: any, createHandler: () => T): T {
+        const key = cls.name;
+        let pool = this._pools.get(key);
+
+        if (!pool) {
+            pool = [];
+            this._pools.set(key, pool);
+        }
+
+        let item: T;
+        if (pool.length > 0) {
+            item = pool.pop();
+        } else {
+            item = createHandler();
+        }
+
+        return item;
+    }
+
+    /**
+     * 回收对象到池
+     */
+    public recoverByClass(instance: any): void {
+        const key = instance.constructor.name;
+        let pool = this._pools.get(key);
+
+        if (!pool) {
+            pool = [];
+            this._pools.set(key, pool);
+        }
+
+        if (pool.indexOf(instance) === -1) {
+            pool.push(instance);
+        }
+    }
+
+    /**
+     * 清空对象池
+     */
+    public clearPool(key: string): void {
+        const pool = this._pools.get(key);
+        if (pool) {
+            pool.length = 0;
+        }
+    }
+}
+
+// ✅ 使用示例
+const bullet = PoolManager.instance.getItemByClass(Bullet, () => {
+    return new Bullet();
+});
+
+// 使用完毕后回收
+PoolManager.instance.recoverByClass(bullet);
+```
+
+## 资源加载管理
+
+```typescript
+/**
+ * 资源加载器
+ */
+export class ResourceLoader {
+    /**
+     * 加载单个资源
+     */
+    public static loadRes(url: string, type?: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Laya.loader.load(url, Laya.Handler.create(this, (res: any) => {
+                if (res) {
+                    resolve(res);
+                } else {
+                    reject(new Error(`Load failed: ${url}`));
+                }
+            }), null, type);
+        });
+    }
+
+    /**
+     * 加载多个资源
+     */
+    public static loadResList(urls: any[]): Promise<void> {
+        return new Promise((resolve, reject) => {
+            Laya.loader.load(urls, Laya.Handler.create(this, () => {
+                resolve();
+            }), Laya.Handler.create(this, (progress: number) => {
+                console.log(`Loading progress: ${progress * 100}%`);
+            }, null, false));
+        });
+    }
+
+    /**
+     * 获取已加载的资源
+     */
+    public static getRes(url: string): any {
+        return Laya.loader.getRes(url);
+    }
+
+    /**
+     * 清理资源
+     */
+    public static clearRes(url: string): void {
+        Laya.loader.clearRes(url);
+    }
+
+    /**
+     * 清理所有未使用的资源
+     */
+    public static clearUnusedRes(): void {
+        Laya.Resource.destroyUnusedResources();
+    }
+}
+
+// ✅ 使用示例
+async function loadGameAssets() {
+    try {
+        // 加载图集
+        await ResourceLoader.loadRes("atlas/game.atlas");
+
+        // 加载音频
+        await ResourceLoader.loadRes("sound/bgm.mp3");
+
+        // 加载预制体
+        const prefab = await ResourceLoader.loadRes("prefab/player.lh");
+
+        console.log("All assets loaded");
+    } catch (error) {
+        console.error("Load failed:", error);
+    }
+}
+```
+
+## 场景管理
+
+```typescript
+/**
+ * 场景管理器
+ */
+export class SceneManager {
+    private static _currentScene: Laya.Scene;
+
+    /**
+     * 切换场景
+     */
+    public static async changeScene(sceneUrl: string): Promise<void> {
+        // 销毁当前场景
+        if (this._currentScene) {
+            this._currentScene.destroy();
+            this._currentScene = null;
+        }
+
+        // 清理资源
+        ResourceLoader.clearUnusedRes();
+
+        // 加载新场景
+        return new Promise((resolve) => {
+            Laya.Scene.open(sceneUrl, true, null, Laya.Handler.create(this, (scene: Laya.Scene) => {
+                this._currentScene = scene;
+                resolve();
+            }));
+        });
+    }
+
+    /**
+     * 获取当前场景
+     */
+    public static getCurrentScene(): Laya.Scene {
+        return this._currentScene;
+    }
+}
+
+// ✅ 使用示例
+await SceneManager.changeScene("scenes/GameScene.scene");
+```
+
+## 事件系统
+
+```typescript
+/**
+ * 游戏事件
+ */
+export enum GameEvent {
+    PLAYER_DEAD = "player_dead",
+    SCORE_CHANGED = "score_changed",
+    LEVEL_UP = "level_up"
+}
+
+/**
+ * 事件管理器
+ */
+export class EventManager {
+    private static _eventDispatcher: Laya.EventDispatcher = new Laya.EventDispatcher();
+
+    /**
+     * 注册事件
+     */
+    public static on(type: string, caller: any, listener: Function): void {
+        this._eventDispatcher.on(type, caller, listener);
+    }
+
+    /**
+     * 移除事件
+     */
+    public static off(type: string, caller: any, listener: Function): void {
+        this._eventDispatcher.off(type, caller, listener);
+    }
+
+    /**
+     * 触发事件
+     */
+    public static dispatch(type: string, data?: any): void {
+        this._eventDispatcher.event(type, data);
+    }
+
+    /**
+     * 清除所有事件
+     */
+    public static offAll(): void {
+        this._eventDispatcher.offAll();
+    }
+}
+
+// ✅ 使用示例
+// 注册事件
+EventManager.on(GameEvent.SCORE_CHANGED, this, this.onScoreChanged);
+
+// 触发事件
+EventManager.dispatch(GameEvent.SCORE_CHANGED, { score: 100 });
+
+// 移除事件
+EventManager.off(GameEvent.SCORE_CHANGED, this, this.onScoreChanged);
+```
+
+## UI 管理
+
+```typescript
+/**
+ * UI 管理器
+ */
+export class UIManager {
+    private static _uiStack: Laya.Dialog[] = [];
+
+    /**
+     * 显示 UI
+     */
+    public static showUI(uiClass: any, closeOther: boolean = false, param?: any): void {
+        if (closeOther) {
+            this.closeAll();
+        }
+
+        const ui = new uiClass();
+        ui.popup();
+        
+        this._uiStack.push(ui);
+
+        // 传递参数
+        if (param && ui.onOpen) {
+            ui.onOpen(param);
+        }
+    }
+
+    /**
+     * 关闭 UI
+     */
+    public static closeUI(ui: Laya.Dialog): void {
+        const index = this._uiStack.indexOf(ui);
+        if (index !== -1) {
+            this._uiStack.splice(index, 1);
+        }
+
+        ui.close();
+    }
+
+    /**
+     * 关闭所有 UI
+     */
+    public static closeAll(): void {
+        for (const ui of this._uiStack) {
+            ui.close();
+        }
+        this._uiStack = [];
+    }
+
+    /**
+     * 获取栈顶 UI
+     */
+    public static getTopUI(): Laya.Dialog {
+        return this._uiStack[this._uiStack.length - 1];
+    }
+}
+
+// ✅ 使用示例
+UIManager.showUI(SettingsDialog, false, { soundEnabled: true });
+```
+
+## 音频管理
+
+```typescript
+/**
+ * 音频管理器
+ */
+export class AudioManager {
+    private static _bgmVolume: number = 1.0;
+    private static _soundVolume: number = 1.0;
+    private static _currentBgm: string = "";
+
+    /**
+     * 播放背景音乐
+     */
+    public static playBGM(url: string, loop: number = 0): void {
+        if (this._currentBgm === url) {
+            return;
+        }
+
+        Laya.SoundManager.stopMusic();
+        Laya.SoundManager.playMusic(url, loop);
+        Laya.SoundManager.setMusicVolume(this._bgmVolume);
+        this._currentBgm = url;
+    }
+
+    /**
+     * 停止背景音乐
+     */
+    public static stopBGM(): void {
+        Laya.SoundManager.stopMusic();
+        this._currentBgm = "";
+    }
+
+    /**
+     * 播放音效
+     */
+    public static playSound(url: string, loops: number = 1): void {
+        Laya.SoundManager.playSound(url, loops, null, null, this._soundVolume * 1000);
+    }
+
+    /**
+     * 设置背景音乐音量
+     */
+    public static setBGMVolume(volume: number): void {
+        this._bgmVolume = Math.max(0, Math.min(1, volume));
+        Laya.SoundManager.setMusicVolume(this._bgmVolume);
+    }
+
+    /**
+     * 设置音效音量
+     */
+    public static setSoundVolume(volume: number): void {
+        this._soundVolume = Math.max(0, Math.min(1, volume));
+        Laya.SoundManager.setSoundVolume(this._soundVolume);
+    }
+}
+
+// ✅ 使用示例
+AudioManager.playBGM("sound/bgm.mp3", 0);  // 0 表示无限循环
+AudioManager.playSound("sound/hit.mp3");
+```
+
+## 网络请求
+
+```typescript
+/**
+ * HTTP 请求管理器
+ */
+export class HttpManager {
+    private static _baseURL: string = "";
+
+    /**
+     * 设置基础 URL
+     */
+    public static setBaseURL(url: string): void {
+        this._baseURL = url;
+    }
+
+    /**
+     * GET 请求
+     */
+    public static get<T>(url: string, params?: any): Promise<T> {
+        return this.request<T>("GET", url, params);
+    }
+
+    /**
+     * POST 请求
+     */
+    public static post<T>(url: string, data?: any): Promise<T> {
+        return this.request<T>("POST", url, data);
+    }
+
+    /**
+     * 发送请求
+     */
+    private static request<T>(method: string, url: string, data?: any): Promise<T> {
+        return new Promise((resolve, reject) => {
+            const fullURL = this._baseURL + url;
+            const xhr = new Laya.HttpRequest();
+
+            xhr.once(Laya.Event.COMPLETE, this, (response: string) => {
+                try {
+                    const result = JSON.parse(response);
+                    resolve(result);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+
+            xhr.once(Laya.Event.ERROR, this, (error: any) => {
+                reject(error);
+            });
+
+            if (method === "GET") {
+                xhr.send(fullURL, null, "get", "json");
+            } else {
+                xhr.send(fullURL, JSON.stringify(data), "post", "json", [
+                    "Content-Type", "application/json"
+                ]);
+            }
+        });
+    }
+}
+
+// ✅ 使用示例
+const data = await HttpManager.get<{ score: number }>("/api/score");
+console.log(data.score);
+```
+
+## 性能优化技巧
+
+### 1. 缓存节点引用
+```typescript
+// ❌ 错误
+updateScore() {
+    (this.owner.getChildByName("scoreText") as Laya.Text).text = `Score: ${this.score}`;
+}
+
+// ✅ 正确
+private _scoreText: Laya.Text;
+
+onEnable() {
+    this._scoreText = this.owner.getChildByName("scoreText") as Laya.Text;
+}
+
+updateScore() {
+    this._scoreText.text = `Score: ${this.score}`;
+}
+```
+
+### 2. 使用 cacheAs 缓存
+```typescript
+// ✅ 缓存为位图
+sprite.cacheAs = "bitmap";
+
+// ✅ 缓存为 normal（矢量缓存）
+sprite.cacheAs = "normal";
+```
+
+### 3. 减少 drawCall
+```typescript
+// ✅ 使用图集
+// ✅ 使用自动图集
+// ✅ 合并静态节点
+```
+
+## 微信小游戏适配
+
+```typescript
+/**
+ * 微信平台
+ */
+export class WeChatPlatform {
+    /**
+     * 初始化
+     */
+    public static init(): void {
+        if (typeof wx !== "undefined") {
+            // 设置默认字体
+            Laya.Text.defaultFontStr = "Arial";
+
+            // 监听显示/隐藏
+            wx.onShow(() => {
+                console.log("Game show");
+            });
+
+            wx.onHide(() => {
+                console.log("Game hide");
+            });
+        }
+    }
+
+    /**
+     * 显示分享菜单
+     */
+    public static showShareMenu(): void {
+        if (typeof wx !== "undefined") {
+            wx.showShareMenu({
+                withShareTicket: true
+            });
+        }
+    }
+
+    /**
+     * 主动分享
+     */
+    public static shareAppMessage(title: string, imageUrl: string): void {
+        if (typeof wx !== "undefined") {
+            wx.shareAppMessage({
+                title: title,
+                imageUrl: imageUrl
+            });
+        }
+    }
+}
+```
+
+## 代码审查清单
+
+- [ ] 是否及时移除事件监听器
+- [ ] 是否清理定时器
+- [ ] 是否使用对象池
+- [ ] 是否缓存常用节点引用
+- [ ] 是否合理使用图集
+- [ ] 是否及时释放资源
+- [ ] 是否使用 cacheAs 优化
+- [ ] UI 是否过度绘制
+- [ ] 是否避免频繁的 getChildByName
+- [ ] 网络请求是否有错误处理
+
+遵循这些规则，可以编写出高性能的 LayaBox 游戏代码。
+

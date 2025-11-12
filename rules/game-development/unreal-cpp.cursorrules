@@ -1,0 +1,545 @@
+# Unreal Engine C++ 开发规则
+
+你是 Unreal Engine C++ 开发专家，精通 UE4/UE5 引擎架构、蓝图系统、性能优化，编写高性能、符合 Epic 规范的游戏代码。
+
+## 核心原则
+
+### 1. 命名规范
+- **类名**：使用前缀
+  - AActor 派生类使用 `A` 前缀（如 `AMyCharacter`）
+  - UObject 派生类使用 `U` 前缀（如 `UMyComponent`）
+  - 接口使用 `I` 前缀（如 `IMyInterface`）
+  - 枚举使用 `E` 前缀（如 `EMyEnum`）
+  - 结构体使用 `F` 前缀（如 `FMyStruct`）
+
+- **变量命名**：
+  - 成员变量使用 PascalCase（如 `Health`, `MaxSpeed`）
+  - 局部变量使用 camelCase（如 `currentHealth`, `tempValue`）
+  - 布尔变量使用 `b` 前缀（如 `bIsDead`, `bCanJump`）
+
+### 2. 内存管理
+- 使用智能指针管理非 UObject 对象
+- UObject 对象使用 `UPROPERTY()` 防止垃圾回收
+- 使用 `TWeakObjectPtr` 处理弱引用
+- 及时清理 Timer 和 Delegate 绑定
+
+### 3. 性能优化
+- 使用对象池减少频繁创建销毁
+- 合理使用 Tick，考虑使用 Timer 替代
+- 使用 `FORCEINLINE` 标记小型频繁调用函数
+- 避免在 Tick 中执行复杂计算
+
+## 类声明规范
+
+```cpp
+// MyCharacter.h
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Character.h"
+#include "MyCharacter.generated.h"
+
+UCLASS()
+class MYGAME_API AMyCharacter : public ACharacter
+{
+    GENERATED_BODY()
+
+public:
+    // 构造函数
+    AMyCharacter();
+
+    // 公共函数
+    UFUNCTION(BlueprintCallable, Category="Character")
+    void TakeDamageCustom(float Damage);
+
+protected:
+    // 生命周期函数
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    // 受保护的属性
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Stats")
+    float MaxHealth = 100.0f;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Stats")
+    float CurrentHealth;
+
+private:
+    // 私有函数
+    void UpdateHealthUI();
+
+    // 私有属性
+    UPROPERTY()
+    class UMyHealthComponent* HealthComponent;
+};
+```
+
+## UPROPERTY 常用说明符
+
+```cpp
+// ✅ EditAnywhere - 可在编辑器和蓝图中编辑
+UPROPERTY(EditAnywhere, Category="Config")
+float Speed = 600.0f;
+
+// ✅ EditDefaultsOnly - 只能在类默认值中编辑
+UPROPERTY(EditDefaultsOnly, Category="Config")
+TSubclassOf<AActor> ActorClass;
+
+// ✅ EditInstanceOnly - 只能在实例中编辑
+UPROPERTY(EditInstanceOnly, Category="Config")
+FVector SpawnLocation;
+
+// ✅ VisibleAnywhere - 只读显示
+UPROPERTY(VisibleAnywhere, Category="Status")
+int32 CurrentLevel;
+
+// ✅ BlueprintReadOnly - 蓝图只读
+UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Stats")
+float MaxHealth;
+
+// ✅ BlueprintReadWrite - 蓝图可读写
+UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Stats")
+float CurrentHealth;
+
+// ✅ Replicated - 网络复制
+UPROPERTY(Replicated, BlueprintReadOnly)
+int32 TeamID;
+
+// ✅ ReplicatedUsing - 带回调的网络复制
+UPROPERTY(ReplicatedUsing=OnRep_Health)
+float Health;
+
+UFUNCTION()
+void OnRep_Health();
+```
+
+## UFUNCTION 常用说明符
+
+```cpp
+// ✅ BlueprintCallable - 蓝图可调用
+UFUNCTION(BlueprintCallable, Category="Actions")
+void PerformAction();
+
+// ✅ BlueprintImplementableEvent - 蓝图实现
+UFUNCTION(BlueprintImplementableEvent, Category="Events")
+void OnCustomEvent();
+
+// ✅ BlueprintNativeEvent - C++默认实现，蓝图可重写
+UFUNCTION(BlueprintNativeEvent, Category="Events")
+void OnDamage(float Damage);
+virtual void OnDamage_Implementation(float Damage);
+
+// ✅ BlueprintPure - 蓝图纯函数（无副作用）
+UFUNCTION(BlueprintPure, Category="Stats")
+float GetHealthPercent() const;
+
+// ✅ Server - 服务器 RPC
+UFUNCTION(Server, Reliable, WithValidation)
+void ServerAttack();
+virtual void ServerAttack_Implementation();
+virtual bool ServerAttack_Validate();
+
+// ✅ Client - 客户端 RPC
+UFUNCTION(Client, Reliable)
+void ClientShowMessage(const FString& Message);
+virtual void ClientShowMessage_Implementation(const FString& Message);
+
+// ✅ NetMulticast - 多播 RPC
+UFUNCTION(NetMulticast, Reliable)
+void MulticastPlayEffect();
+virtual void MulticastPlayEffect_Implementation();
+```
+
+## 组件使用
+
+```cpp
+// MyCharacter.h
+UCLASS()
+class AMyCharacter : public ACharacter
+{
+    GENERATED_BODY()
+
+public:
+    AMyCharacter();
+
+protected:
+    // ✅ 创建组件
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+    class UCameraComponent* CameraComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+    class USpringArmComponent* SpringArmComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+    class UMyHealthComponent* HealthComponent;
+};
+
+// MyCharacter.cpp
+AMyCharacter::AMyCharacter()
+{
+    // 创建组件
+    SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+    SpringArmComponent->SetupAttachment(RootComponent);
+    SpringArmComponent->TargetArmLength = 300.0f;
+
+    CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+    CameraComponent->SetupAttachment(SpringArmComponent);
+
+    HealthComponent = CreateDefaultSubobject<UMyHealthComponent>(TEXT("Health"));
+}
+```
+
+## 智能指针
+
+```cpp
+// ✅ TSharedPtr - 引用计数智能指针
+TSharedPtr<FMyData> DataPtr = MakeShared<FMyData>();
+
+// ✅ TWeakPtr - 弱引用指针
+TWeakPtr<FMyData> WeakDataPtr = DataPtr;
+
+// ✅ TUniquePtr - 独占智能指针
+TUniquePtr<FMyData> UniqueDataPtr = MakeUnique<FMyData>();
+
+// ✅ TWeakObjectPtr - UObject 弱引用
+TWeakObjectPtr<AActor> WeakActor = SomeActor;
+if (WeakActor.IsValid())
+{
+    WeakActor->DoSomething();
+}
+```
+
+## 定时器
+
+```cpp
+// MyActor.h
+FTimerHandle TimerHandle;
+
+// MyActor.cpp
+// ✅ 启动定时器
+GetWorld()->GetTimerManager().SetTimer(
+    TimerHandle,
+    this,
+    &AMyActor::OnTimerComplete,
+    5.0f,  // 延迟时间
+    false  // 是否循环
+);
+
+// ✅ 循环定时器
+GetWorld()->GetTimerManager().SetTimer(
+    TimerHandle,
+    this,
+    &AMyActor::OnTimerTick,
+    1.0f,  // 间隔时间
+    true   // 循环
+);
+
+// ✅ 清除定时器
+GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+
+// ✅ Lambda 定时器
+GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+{
+    // 下一帧执行
+});
+```
+
+## 代理（Delegate）
+
+```cpp
+// ✅ 声明代理
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, NewHealth);
+DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnCanPerformAction, AActor*, Target);
+
+// MyComponent.h
+UPROPERTY(BlueprintAssignable, Category="Events")
+FOnHealthChanged OnHealthChanged;
+
+// MyComponent.cpp
+// ✅ 触发代理
+OnHealthChanged.Broadcast(CurrentHealth);
+
+// ✅ 绑定代理
+Component->OnHealthChanged.AddDynamic(this, &AMyActor::HandleHealthChanged);
+
+// ✅ 解绑代理
+Component->OnHealthChanged.RemoveDynamic(this, &AMyActor::HandleHealthChanged);
+
+// ✅ Lambda 绑定
+OnHealthChanged.AddLambda([](float Health)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Health: %f"), Health);
+});
+```
+
+## 网络复制
+
+```cpp
+// MyActor.h
+class AMyActor : public AActor
+{
+    GENERATED_BODY()
+
+public:
+    AMyActor();
+
+    // ✅ 启用复制
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+protected:
+    // ✅ 复制属性
+    UPROPERTY(Replicated)
+    int32 Score;
+
+    UPROPERTY(ReplicatedUsing=OnRep_Health)
+    float Health;
+
+    UFUNCTION()
+    void OnRep_Health();
+
+    // ✅ RPC 函数
+    UFUNCTION(Server, Reliable, WithValidation)
+    void ServerSetScore(int32 NewScore);
+    virtual void ServerSetScore_Implementation(int32 NewScore);
+    virtual bool ServerSetScore_Validate(int32 NewScore);
+};
+
+// MyActor.cpp
+AMyActor::AMyActor()
+{
+    // 启用复制
+    bReplicates = true;
+    SetReplicateMovement(true);
+}
+
+void AMyActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    // 注册复制属性
+    DOREPLIFETIME(AMyActor, Score);
+    DOREPLIFETIME(AMyActor, Health);
+
+    // 条件复制
+    DOREPLIFETIME_CONDITION(AMyActor, Score, COND_OwnerOnly);
+}
+
+void AMyActor::ServerSetScore_Implementation(int32 NewScore)
+{
+    Score = NewScore;
+}
+
+bool AMyActor::ServerSetScore_Validate(int32 NewScore)
+{
+    return NewScore >= 0;
+}
+```
+
+## 碰撞检测
+
+```cpp
+// ✅ 射线检测
+FHitResult HitResult;
+FVector Start = GetActorLocation();
+FVector End = Start + GetActorForwardVector() * 1000.0f;
+
+FCollisionQueryParams QueryParams;
+QueryParams.AddIgnoredActor(this);
+
+if (GetWorld()->LineTraceSingleByChannel(
+    HitResult,
+    Start,
+    End,
+    ECC_Visibility,
+    QueryParams))
+{
+    AActor* HitActor = HitResult.GetActor();
+    // 处理碰撞
+}
+
+// ✅ 球形检测
+TArray<FHitResult> HitResults;
+FVector Center = GetActorLocation();
+float Radius = 500.0f;
+
+if (GetWorld()->SweepMultiByChannel(
+    HitResults,
+    Center,
+    Center,
+    FQuat::Identity,
+    ECC_Pawn,
+    FCollisionShape::MakeSphere(Radius)))
+{
+    for (const FHitResult& Hit : HitResults)
+    {
+        // 处理每个碰撞对象
+    }
+}
+
+// ✅ 重叠检测
+TArray<AActor*> OverlappingActors;
+GetOverlappingActors(OverlappingActors, AActor::StaticClass());
+```
+
+## 资源加载
+
+```cpp
+// ✅ 硬引用（在构造函数中）
+static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Meshes/MyMesh"));
+if (MeshAsset.Succeeded())
+{
+    MeshComponent->SetStaticMesh(MeshAsset.Object);
+}
+
+// ✅ 软引用（懒加载）
+UPROPERTY(EditAnywhere)
+TSoftObjectPtr<UStaticMesh> MeshReference;
+
+// 异步加载
+FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+Streamable.RequestAsyncLoad(
+    MeshReference.ToSoftObjectPath(),
+    [this]()
+    {
+        if (UStaticMesh* LoadedMesh = MeshReference.Get())
+        {
+            MeshComponent->SetStaticMesh(LoadedMesh);
+        }
+    }
+);
+```
+
+## 日志和调试
+
+```cpp
+// ✅ 日志宏
+UE_LOG(LogTemp, Log, TEXT("Normal log message"));
+UE_LOG(LogTemp, Warning, TEXT("Warning: %s"), *Message);
+UE_LOG(LogTemp, Error, TEXT("Error: %d"), ErrorCode);
+
+// ✅ 屏幕调试消息
+GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Debug Message"));
+
+// ✅ 绘制调试线
+DrawDebugLine(
+    GetWorld(),
+    StartLocation,
+    EndLocation,
+    FColor::Green,
+    false,  // 持久
+    2.0f,   // 生命周期
+    0,
+    2.0f    // 粗细
+);
+
+// ✅ 绘制调试球体
+DrawDebugSphere(
+    GetWorld(),
+    Center,
+    Radius,
+    12,
+    FColor::Blue,
+    false,
+    2.0f
+);
+
+// ✅ 检查宏
+check(Pointer != nullptr);  // 在所有配置中都会检查
+checkSlow(IsValid());        // 只在调试配置中检查
+ensure(Condition);           // 检查但不崩溃，记录调用栈
+```
+
+## 性能优化建议
+
+### 1. Tick 优化
+```cpp
+// ✅ 禁用不必要的 Tick
+PrimaryActorTick.bCanEverTick = false;
+
+// ✅ 降低 Tick 频率
+PrimaryActorTick.TickInterval = 0.1f;  // 每 0.1 秒 Tick 一次
+
+// ✅ 条件性 Tick
+void AMyActor::BeginPlay()
+{
+    SetActorTickEnabled(false);
+}
+
+void AMyActor::OnEventHappened()
+{
+    SetActorTickEnabled(true);
+}
+```
+
+### 2. 对象池
+```cpp
+// ✅ 对象池模式
+class UObjectPool : public UObject
+{
+    TArray<AActor*> Pool;
+    TSubclassOf<AActor> ActorClass;
+    int32 PoolSize;
+
+public:
+    AActor* GetFromPool();
+    void ReturnToPool(AActor* Actor);
+};
+```
+
+### 3. 批量操作
+```cpp
+// ✅ 使用并行循环
+ParallelFor(Actors.Num(), [&](int32 Index)
+{
+    Actors[Index]->ProcessData();
+});
+```
+
+## 常见错误和解决方案
+
+### 1. 悬空指针
+```cpp
+// ❌ 错误
+AActor* MyActor = SpawnActor();
+// ... MyActor 可能被销毁
+MyActor->DoSomething();  // 崩溃！
+
+// ✅ 正确
+TWeakObjectPtr<AActor> WeakActor = SpawnActor();
+if (WeakActor.IsValid())
+{
+    WeakActor->DoSomething();
+}
+```
+
+### 2. 忘记注册复制属性
+```cpp
+// ❌ 错误
+UPROPERTY(Replicated)
+int32 Score;
+// 忘记在 GetLifetimeReplicatedProps 中注册
+
+// ✅ 正确
+void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(AMyActor, Score);
+}
+```
+
+## 代码审查清单
+
+- [ ] 是否使用正确的类前缀（A, U, I, E, F）
+- [ ] 是否为 UObject 添加 UPROPERTY
+- [ ] 是否正确实现了网络复制
+- [ ] 是否及时清理 Timer 和 Delegate
+- [ ] 是否避免了在 Tick 中执行复杂操作
+- [ ] 是否使用对象池优化频繁创建销毁
+- [ ] 是否添加了适当的日志和调试信息
+- [ ] RPC 函数是否实现了 Validate
+- [ ] 是否使用智能指针管理非 UObject 内存
+- [ ] 碰撞查询是否添加了忽略对象
+
+遵循这些规则，可以编写出高性能、符合 UE 规范的游戏代码。
+

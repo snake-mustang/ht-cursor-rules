@@ -1,0 +1,870 @@
+# Cocos Creator TypeScript 游戏开发规则
+
+你是 Cocos Creator 游戏引擎专家，精通 Cocos Creator 2.x/3.x、TypeScript、性能优化，编写高性能、符合 Cocos 规范的游戏代码。
+
+## 核心原则
+
+### 1. 命名规范
+- **类名**：PascalCase（如 `PlayerController`, `GameManager`）
+- **方法名**：camelCase（如 `onLoad`, `update`）
+- **私有成员**：下划线前缀（如 `_health`, `_speed`）
+- **常量**：UPPER_SNAKE_CASE（如 `MAX_SPEED`, `JUMP_HEIGHT`）
+- **组件引用**：驼峰命名（如 `sprite`, `animation`）
+
+### 2. 组件生命周期顺序
+1. `onLoad()` - 初始化
+2. `start()` - 逻辑开始
+3. `update(dt)` - 每帧更新
+4. `lateUpdate(dt)` - 延迟更新
+5. `onDestroy()` - 销毁清理
+
+### 3. 性能优化
+- 使用节点池减少创建销毁开销
+- 缓存组件引用
+- 合理使用 update，考虑使用 schedule
+- 避免在 update 中频繁查找节点
+- 使用图集和批次渲染
+- 及时注销事件监听
+
+## 基础组件脚本
+
+```typescript
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class Player extends cc.Component {
+    // ✅ 使用 @property 装饰器暴露属性
+    @property
+    moveSpeed: number = 200;
+
+    @property
+    jumpHeight: number = 300;
+
+    @property(cc.Prefab)
+    bulletPrefab: cc.Prefab = null;
+
+    @property(cc.AudioClip)
+    jumpSound: cc.AudioClip = null;
+
+    // 私有成员
+    private _isJumping: boolean = false;
+    private _rigidBody: cc.RigidBody = null;
+    private _animation: cc.Animation = null;
+
+    /**
+     * 组件首次激活时调用，只调用一次
+     */
+    onLoad() {
+        // 获取组件引用
+        this._rigidBody = this.getComponent(cc.RigidBody);
+        this._animation = this.getComponent(cc.Animation);
+
+        // 注册事件
+        this.node.on(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.on('collision-enter', this.onCollisionEnter, this);
+
+        // 启动定时器
+        this.schedule(this.checkEnemies, 1);
+    }
+
+    /**
+     * 组件首次激活时，在 onLoad 之后调用
+     */
+    start() {
+        // 播放动画
+        this._animation.play('idle');
+    }
+
+    /**
+     * 每帧调用
+     */
+    update(dt: number) {
+        this.handleInput();
+        this.updatePosition(dt);
+    }
+
+    /**
+     * 在所有组件的 update 之后调用
+     */
+    lateUpdate(dt: number) {
+        this.updateCamera();
+    }
+
+    /**
+     * 处理输入
+     */
+    private handleInput(): void {
+        // Cocos 2.x
+        if (cc.sys.isMobile) {
+            // 移动端触摸输入
+        } else {
+            // PC 键盘输入
+            if (cc.systemEvent) {
+                // 处理键盘事件
+            }
+        }
+    }
+
+    /**
+     * 更新位置
+     */
+    private updatePosition(dt: number): void {
+        const pos = this.node.position;
+        this.node.setPosition(pos.x + this.moveSpeed * dt, pos.y);
+    }
+
+    /**
+     * 跳跃
+     */
+    public jump(): void {
+        if (this._isJumping) return;
+
+        this._isJumping = true;
+        this._rigidBody.applyLinearImpulse(
+            cc.v2(0, this.jumpHeight),
+            cc.v2(0, 0),
+            true
+        );
+
+        // 播放音效
+        cc.audioEngine.playEffect(this.jumpSound, false);
+
+        // 播放动画
+        this._animation.play('jump');
+    }
+
+    /**
+     * 触摸开始
+     */
+    private onTouchStart(event: cc.Event.EventTouch): void {
+        this.jump();
+    }
+
+    /**
+     * 碰撞进入
+     */
+    private onCollisionEnter(other: cc.Collider, self: cc.Collider): void {
+        console.log('Collision with', other.node.name);
+        
+        if (other.node.group === 'enemy') {
+            this.takeDamage(10);
+        }
+    }
+
+    /**
+     * 受到伤害
+     */
+    public takeDamage(damage: number): void {
+        // 处理伤害逻辑
+    }
+
+    /**
+     * 定时检查敌人
+     */
+    private checkEnemies(): void {
+        // 每秒执行一次的逻辑
+    }
+
+    /**
+     * 组件销毁时调用
+     */
+    onDestroy() {
+        // 注销事件
+        this.node.off(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.off('collision-enter', this.onCollisionEnter, this);
+
+        // 停止所有定时器
+        this.unscheduleAllCallbacks();
+    }
+}
+```
+
+## 节点池使用
+
+```typescript
+/**
+ * 对象池管理器
+ */
+export class NodePoolManager {
+    private static _instance: NodePoolManager;
+    private _pools: Map<string, cc.NodePool> = new Map();
+
+    public static get instance(): NodePoolManager {
+        if (!this._instance) {
+            this._instance = new NodePoolManager();
+        }
+        return this._instance;
+    }
+
+    /**
+     * 创建对象池
+     */
+    public createPool(poolName: string, prefab: cc.Prefab, initialCount: number = 5): void {
+        if (this._pools.has(poolName)) {
+            console.warn(`Pool ${poolName} already exists`);
+            return;
+        }
+
+        const pool = new cc.NodePool();
+
+        // 预创建对象
+        for (let i = 0; i < initialCount; i++) {
+            const node = cc.instantiate(prefab);
+            pool.put(node);
+        }
+
+        this._pools.set(poolName, pool);
+    }
+
+    /**
+     * 从池中获取节点
+     */
+    public getNode(poolName: string, prefab?: cc.Prefab): cc.Node {
+        const pool = this._pools.get(poolName);
+        if (!pool) {
+            console.error(`Pool ${poolName} not found`);
+            return null;
+        }
+
+        let node: cc.Node;
+        if (pool.size() > 0) {
+            node = pool.get();
+        } else {
+            node = cc.instantiate(prefab);
+        }
+
+        return node;
+    }
+
+    /**
+     * 回收节点到池
+     */
+    public putNode(poolName: string, node: cc.Node): void {
+        const pool = this._pools.get(poolName);
+        if (!pool) {
+            console.error(`Pool ${poolName} not found`);
+            node.destroy();
+            return;
+        }
+
+        pool.put(node);
+    }
+
+    /**
+     * 清空对象池
+     */
+    public clearPool(poolName: string): void {
+        const pool = this._pools.get(poolName);
+        if (pool) {
+            pool.clear();
+            this._pools.delete(poolName);
+        }
+    }
+}
+
+// ✅ 使用示例
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class BulletSpawner extends cc.Component {
+    @property(cc.Prefab)
+    bulletPrefab: cc.Prefab = null;
+
+    onLoad() {
+        // 创建对象池
+        NodePoolManager.instance.createPool('bullet', this.bulletPrefab, 10);
+    }
+
+    spawnBullet() {
+        // 从池中获取
+        const bullet = NodePoolManager.instance.getNode('bullet', this.bulletPrefab);
+        bullet.setPosition(this.node.position);
+        this.node.parent.addChild(bullet);
+    }
+
+    recycleBullet(bullet: cc.Node) {
+        // 回收到池
+        bullet.removeFromParent();
+        NodePoolManager.instance.putNode('bullet', bullet);
+    }
+}
+```
+
+## 事件管理
+
+```typescript
+/**
+ * 游戏事件
+ */
+export enum GameEvent {
+    PLAYER_DEAD = 'player_dead',
+    SCORE_CHANGED = 'score_changed',
+    LEVEL_UP = 'level_up',
+    GAME_OVER = 'game_over'
+}
+
+/**
+ * 事件管理器
+ */
+export class EventManager {
+    private static _eventTarget: cc.EventTarget = new cc.EventTarget();
+
+    /**
+     * 注册事件
+     */
+    public static on(eventName: string, callback: Function, target?: any): void {
+        this._eventTarget.on(eventName, callback, target);
+    }
+
+    /**
+     * 注册一次性事件
+     */
+    public static once(eventName: string, callback: Function, target?: any): void {
+        this._eventTarget.once(eventName, callback, target);
+    }
+
+    /**
+     * 移除事件
+     */
+    public static off(eventName: string, callback?: Function, target?: any): void {
+        this._eventTarget.off(eventName, callback, target);
+    }
+
+    /**
+     * 触发事件
+     */
+    public static emit(eventName: string, ...args: any[]): void {
+        this._eventTarget.emit(eventName, ...args);
+    }
+
+    /**
+     * 移除目标的所有事件
+     */
+    public static targetOff(target: any): void {
+        this._eventTarget.targetOff(target);
+    }
+}
+
+// ✅ 使用示例
+// 注册事件
+EventManager.on(GameEvent.SCORE_CHANGED, this.onScoreChanged, this);
+
+// 触发事件
+EventManager.emit(GameEvent.SCORE_CHANGED, 100);
+
+// 移除事件
+EventManager.off(GameEvent.SCORE_CHANGED, this.onScoreChanged, this);
+```
+
+## 资源加载管理
+
+```typescript
+/**
+ * 资源加载器
+ */
+export class ResourceLoader {
+    /**
+     * 加载资源
+     */
+    public static load<T extends cc.Asset>(
+        url: string,
+        type: typeof cc.Asset,
+        onProgress?: (progress: number) => void
+    ): Promise<T> {
+        return new Promise((resolve, reject) => {
+            cc.resources.load(url, type, (err, asset) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(asset as T);
+                }
+            });
+        });
+    }
+
+    /**
+     * 加载目录
+     */
+    public static loadDir(
+        dir: string,
+        type?: typeof cc.Asset,
+        onProgress?: (progress: number) => void
+    ): Promise<cc.Asset[]> {
+        return new Promise((resolve, reject) => {
+            cc.resources.loadDir(dir, type, (finished, total) => {
+                if (onProgress) {
+                    onProgress(finished / total);
+                }
+            }, (err, assets) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(assets);
+                }
+            });
+        });
+    }
+
+    /**
+     * 释放资源
+     */
+    public static release(asset: cc.Asset | string): void {
+        if (typeof asset === 'string') {
+            cc.resources.release(asset);
+        } else {
+            asset.decRef();
+        }
+    }
+
+    /**
+     * 释放目录资源
+     */
+    public static releaseDir(dir: string, type?: typeof cc.Asset): void {
+        cc.resources.releaseDir(dir, type);
+    }
+}
+
+// ✅ 使用示例
+async loadGameAssets() {
+    try {
+        // 加载预制体
+        const prefab = await ResourceLoader.load<cc.Prefab>(
+            'prefabs/player',
+            cc.Prefab
+        );
+        
+        // 加载音频
+        const audio = await ResourceLoader.load<cc.AudioClip>(
+            'sounds/bgm',
+            cc.AudioClip
+        );
+        
+        // 加载图集
+        const atlas = await ResourceLoader.load<cc.SpriteAtlas>(
+            'textures/ui',
+            cc.SpriteAtlas
+        );
+        
+        console.log('All assets loaded');
+    } catch (error) {
+        console.error('Load failed:', error);
+    }
+}
+```
+
+## 场景管理
+
+```typescript
+/**
+ * 场景管理器
+ */
+export class SceneManager {
+    /**
+     * 加载场景
+     */
+    public static loadScene(sceneName: string, onLaunched?: Function): Promise<void> {
+        return new Promise((resolve, reject) => {
+            cc.director.loadScene(sceneName, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (onLaunched) {
+                        onLaunched();
+                    }
+                    resolve();
+                }
+            });
+        });
+    }
+
+    /**
+     * 预加载场景
+     */
+    public static preloadScene(sceneName: string, onProgress?: (progress: number) => void): Promise<void> {
+        return new Promise((resolve, reject) => {
+            cc.director.preloadScene(sceneName, (completedCount, totalCount) => {
+                if (onProgress) {
+                    onProgress(completedCount / totalCount);
+                }
+            }, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    /**
+     * 获取当前场景
+     */
+    public static getCurrentScene(): cc.Scene {
+        return cc.director.getScene();
+    }
+}
+
+// ✅ 使用示例
+async switchToGameScene() {
+    // 显示加载界面
+    this.showLoading();
+    
+    // 预加载场景
+    await SceneManager.preloadScene('game', (progress) => {
+        this.updateLoadingProgress(progress);
+    });
+    
+    // 切换场景
+    await SceneManager.loadScene('game');
+}
+```
+
+## UI 管理
+
+```typescript
+/**
+ * UI 层级
+ */
+export enum UILayer {
+    BACKGROUND = 0,
+    NORMAL = 1,
+    POPUP = 2,
+    TOP = 3
+}
+
+/**
+ * UI 管理器
+ */
+export class UIManager {
+    private static _layerNodes: Map<UILayer, cc.Node> = new Map();
+    private static _uiStack: cc.Node[] = [];
+
+    /**
+     * 初始化
+     */
+    public static init(canvas: cc.Node): void {
+        // 创建 UI 层级节点
+        for (const layer in UILayer) {
+            if (!isNaN(Number(layer))) {
+                const layerNode = new cc.Node(`Layer_${UILayer[layer]}`);
+                layerNode.setParent(canvas);
+                layerNode.zIndex = Number(layer);
+                this._layerNodes.set(Number(layer), layerNode);
+            }
+        }
+    }
+
+    /**
+     * 显示 UI
+     */
+    public static async showUI(
+        path: string,
+        layer: UILayer = UILayer.NORMAL,
+        closeOther: boolean = false
+    ): Promise<cc.Node> {
+        if (closeOther) {
+            this.closeAll();
+        }
+
+        // 加载 UI 预制体
+        const prefab = await ResourceLoader.load<cc.Prefab>(path, cc.Prefab);
+        const ui = cc.instantiate(prefab);
+
+        // 添加到对应层级
+        const layerNode = this._layerNodes.get(layer);
+        ui.setParent(layerNode);
+
+        this._uiStack.push(ui);
+
+        return ui;
+    }
+
+    /**
+     * 关闭 UI
+     */
+    public static closeUI(ui: cc.Node): void {
+        const index = this._uiStack.indexOf(ui);
+        if (index !== -1) {
+            this._uiStack.splice(index, 1);
+        }
+
+        ui.destroy();
+    }
+
+    /**
+     * 关闭所有 UI
+     */
+    public static closeAll(): void {
+        for (const ui of this._uiStack) {
+            ui.destroy();
+        }
+        this._uiStack = [];
+    }
+}
+
+// ✅ 使用示例
+const settingsUI = await UIManager.showUI('ui/settings', UILayer.POPUP);
+```
+
+## 动画控制
+
+```typescript
+@ccclass
+export default class Character extends cc.Component {
+    @property(cc.Animation)
+    animation: cc.Animation = null;
+
+    onLoad() {
+        // 注册动画事件
+        this.animation.on('finished', this.onAnimationFinished, this);
+        this.animation.on('play', this.onAnimationPlay, this);
+    }
+
+    /**
+     * 播放动画
+     */
+    playAnimation(animName: string, loop: boolean = false): void {
+        const state = this.animation.play(animName);
+        if (state) {
+            state.wrapMode = loop ? cc.WrapMode.Loop : cc.WrapMode.Normal;
+        }
+    }
+
+    /**
+     * 动画完成回调
+     */
+    private onAnimationFinished(): void {
+        console.log('Animation finished');
+    }
+
+    /**
+     * 动画播放回调
+     */
+    private onAnimationPlay(): void {
+        console.log('Animation play');
+    }
+
+    /**
+     * 缓动动画
+     */
+    tweenAnimation(): void {
+        // 移动
+        cc.tween(this.node)
+            .to(1, { position: cc.v3(100, 100, 0) })
+            .start();
+
+        // 缩放
+        cc.tween(this.node)
+            .to(0.5, { scale: 2 })
+            .to(0.5, { scale: 1 })
+            .start();
+
+        // 旋转
+        cc.tween(this.node)
+            .by(2, { angle: 360 })
+            .start();
+
+        // 序列动画
+        cc.tween(this.node)
+            .to(1, { position: cc.v3(100, 0, 0) })
+            .to(1, { position: cc.v3(100, 100, 0) })
+            .to(1, { position: cc.v3(0, 100, 0) })
+            .to(1, { position: cc.v3(0, 0, 0) })
+            .start();
+
+        // 回调
+        cc.tween(this.node)
+            .to(1, { scale: 2 })
+            .call(() => {
+                console.log('Scale animation complete');
+            })
+            .start();
+    }
+
+    onDestroy() {
+        this.animation.off('finished', this.onAnimationFinished, this);
+        this.animation.off('play', this.onAnimationPlay, this);
+    }
+}
+```
+
+## 物理系统
+
+```typescript
+@ccclass
+export default class PhysicsObject extends cc.Component {
+    @property
+    moveForce: number = 500;
+
+    private _rigidBody: cc.RigidBody = null;
+
+    onLoad() {
+        // 获取刚体组件
+        this._rigidBody = this.getComponent(cc.RigidBody);
+
+        // 启用物理系统
+        cc.director.getPhysicsManager().enabled = true;
+
+        // 显示物理调试信息
+        // cc.director.getPhysicsManager().debugDrawFlags = 
+        //     cc.PhysicsManager.DrawBits.e_shapeBit;
+
+        // 注册碰撞回调
+        cc.director.getCollisionManager().enabled = true;
+    }
+
+    /**
+     * 应用力
+     */
+    applyForce(force: cc.Vec2): void {
+        this._rigidBody.applyForceToCenter(force, true);
+    }
+
+    /**
+     * 应用冲量
+     */
+    applyImpulse(impulse: cc.Vec2): void {
+        this._rigidBody.applyLinearImpulse(impulse, cc.v2(0, 0), true);
+    }
+
+    /**
+     * 碰撞开始
+     */
+    onCollisionEnter(other: cc.Collider, self: cc.Collider): void {
+        console.log('Collision enter:', other.node.name);
+    }
+
+    /**
+     * 碰撞持续
+     */
+    onCollisionStay(other: cc.Collider, self: cc.Collider): void {
+        console.log('Collision stay:', other.node.name);
+    }
+
+    /**
+     * 碰撞结束
+     */
+    onCollisionExit(other: cc.Collider, self: cc.Collider): void {
+        console.log('Collision exit:', other.node.name);
+    }
+}
+```
+
+## 网络请求
+
+```typescript
+/**
+ * HTTP 管理器
+ */
+export class HttpManager {
+    private static _baseURL: string = '';
+
+    public static setBaseURL(url: string): void {
+        this._baseURL = url;
+    }
+
+    /**
+     * GET 请求
+     */
+    public static get<T>(url: string, params?: any): Promise<T> {
+        return this.request<T>('GET', url, params);
+    }
+
+    /**
+     * POST 请求
+     */
+    public static post<T>(url: string, data?: any): Promise<T> {
+        return this.request<T>('POST', url, data);
+    }
+
+    /**
+     * 发送请求
+     */
+    private static request<T>(method: string, url: string, data?: any): Promise<T> {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            const fullURL = this._baseURL + url;
+
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    } else {
+                        reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
+                    }
+                }
+            };
+
+            xhr.open(method, fullURL, true);
+
+            if (method === 'POST') {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(data));
+            } else {
+                xhr.send();
+            }
+        });
+    }
+}
+
+// ✅ 使用示例
+const response = await HttpManager.get<{ score: number }>('/api/leaderboard');
+console.log(response.score);
+```
+
+## 性能优化技巧
+
+### 1. 缓存组件引用
+```typescript
+// ❌ 错误
+update() {
+    this.node.getComponent(cc.Sprite).spriteFrame = this.frame;
+}
+
+// ✅ 正确
+private _sprite: cc.Sprite;
+
+onLoad() {
+    this._sprite = this.getComponent(cc.Sprite);
+}
+
+update() {
+    this._sprite.spriteFrame = this.frame;
+}
+```
+
+### 2. 合理使用 update
+```typescript
+// ✅ 使用 schedule 替代 update
+onLoad() {
+    this.schedule(this.checkStatus, 1); // 每秒执行一次
+}
+```
+
+### 3. 使用图集
+```typescript
+// ✅ 自动图集打包
+// ✅ 手动合并图集
+// ✅ 动态图集
+```
+
+## 代码审查清单
+
+- [ ] 是否正确使用 @ccclass 和 @property
+- [ ] 是否在 onDestroy 中清理资源
+- [ ] 是否使用节点池优化性能
+- [ ] 是否缓存组件引用
+- [ ] 是否移除事件监听
+- [ ] 是否停止定时器
+- [ ] 是否合理使用图集
+- [ ] 是否避免在 update 中查找节点
+- [ ] 碰撞回调是否正确实现
+- [ ] 网络请求是否有错误处理
+
+遵循这些规则，可以编写出高性能的 Cocos Creator 游戏代码。
+
