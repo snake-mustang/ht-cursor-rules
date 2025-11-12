@@ -2,9 +2,10 @@
 
 🚀 **一键安装，一键配置！** 为 Cursor AI 快速添加编程规则的 VSCode/Cursor 扩展。提供前端、后端、游戏研发、原生开发、测试等 28 种精选规则模板。
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
-[![Downloads](https://img.shields.io/visual-studio-marketplace/d/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
+[![Version](https://img.shields.io/open-vsx/v/HUANGTONG/ht-cursor-rules)](https://open-vsx.org/extension/HUANGTONG/ht-cursor-rules)
+[![Downloads](https://img.shields.io/open-vsx/dt/HUANGTONG/ht-cursor-rules)](https://open-vsx.org/extension/HUANGTONG/ht-cursor-rules)
+[![Rating](https://img.shields.io/open-vsx/rating/HUANGTONG/ht-cursor-rules)](https://open-vsx.org/extension/HUANGTONG/ht-cursor-rules)
+
 
 ---
 
@@ -38,9 +39,7 @@
 
 ### 视频演示
 
-[![使用演示视频](https://pingtai-img.shiyue.com/bbs/others/ai/htcursor-pic.png)](https://pingtai-img.shiyue.com/bbs/others/ai/ys-cursorrules.mp4)
-
-*点击图片观看使用演示视频*
+<video src="https://pingtai-img.shiyue.com/bbs/others/ai/ys-cursorrules.mp4" controls width="100%"></video>
 
 ### 效果预览
 
