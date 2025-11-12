@@ -1,3 +1,10 @@
+---
+description: "Cocos Creator TypeScript 游戏开发规范"
+globs:
+  - "assets/**/*.ts"
+alwaysApply: false
+---
+
 # Cocos Creator TypeScript 游戏开发规则
 
 你是 Cocos Creator 游戏引擎专家，精通 Cocos Creator 2.x/3.x、TypeScript、性能优化，编写高性能、符合 Cocos 规范的游戏代码。

@@ -1,23 +1,37 @@
+---
+description: "Vue 3 + JSX/TSX 开发最佳实践，使用 TypeScript 和 Composition API"
+globs:
+  - "src/**/*.vue"
+  - "src/**/*.tsx"
+  - "src/**/*.jsx"
+alwaysApply: false
+---
+
+# Vue 3 JSX/TSX 开发规则
+
 You are an expert in Vue 3, JSX/TSX, TypeScript, and modern frontend development.
 
-Key Principles
+## 核心原则
+
 - Write concise, technical TypeScript code with accurate JSX/TSX examples
 - Use Vue 3 Composition API with JSX/TSX syntax
 - Prefer functional and declarative programming patterns
 - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
 - Follow Vue 3 and JSX best practices for component development
 
-Vue 3 + JSX/TSX Best Practices
+## Vue 3 + JSX/TSX 最佳实践
+
 - Use `<script setup>` with JSX render functions or defineComponent with render function
 - Leverage Vue 3's Composition API (ref, reactive, computed, watch)
 - Use proper TypeScript interfaces for props and emits
 - Implement v-model and event handling in JSX syntax
 - Use fragments (<></>) for multiple root elements
 
-Component Structure
+## 组件结构示例
+
 ```tsx
-import { defineComponent, ref, computed } from 'vue'
-import type { PropType } from 'vue'
+import { defineComponent, ref, computed } from "vue"
+import type { PropType } from "vue"
 
 interface User {
   id: string
@@ -26,7 +40,7 @@ interface User {
 }
 
 export default defineComponent({
-  name: 'UserProfile',
+  name: "UserProfile",
   props: {
     user: {
       type: Object as PropType<User>,
@@ -37,7 +51,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['update', 'delete'],
+  emits: ["update", "delete"],
   setup(props, { emit }) {
     const isEditing = ref(false)
     const localUser = ref({ ...props.user })
@@ -47,12 +61,12 @@ export default defineComponent({
     )
 
     const handleSave = () => {
-      emit('update', localUser.value)
+      emit("update", localUser.value)
       isEditing.value = false
     }
 
     const handleDelete = () => {
-      emit('delete', props.user.id)
+      emit("delete", props.user.id)
     }
 
     return () => (
@@ -60,12 +74,12 @@ export default defineComponent({
         {isEditing.value ? (
           <div class="edit-mode">
             <input
-              v-model={localUser.value.name}
+              vModel={localUser.value.name}
               placeholder="Name"
               class="input"
             />
             <input
-              v-model={localUser.value.email}
+              vModel={localUser.value.email}
               placeholder="Email"
               class="input"
             />
@@ -89,27 +103,34 @@ export default defineComponent({
 })
 ```
 
-JSX Syntax in Vue 3
+## JSX 语法规范
+
+### 事件处理
 - Event handling: `onClick`, `onInput`, `onChange`
+
+### 属性绑定
 - Props binding: `<Component propName={value} />`
-- Class binding: `class={['base', { active: isActive.value }]}`
-- Style binding: `style={{ color: textColor.value, fontSize: '14px' }}`
+- Class binding: `class={["base", { active: isActive.value }]}`
+- Style binding: `style={{ color: textColor.value, fontSize: "14px" }}`
+
+### 条件与列表渲染
 - Conditional rendering: `{condition && <Component />}` or ternary
 - List rendering: `{items.value.map(item => <Item key={item.id} data={item} />)}`
 
-Using setup() with JSX
+## Setup 函数与 JSX
+
 ```tsx
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted } from "vue"
 
 export default defineComponent({
-  name: 'Counter',
+  name: "Counter",
   setup() {
     const count = ref(0)
     const increment = () => count.value++
     const decrement = () => count.value--
 
     onMounted(() => {
-      console.log('Component mounted')
+      console.log("Component mounted")
     })
 
     return () => (
@@ -123,12 +144,13 @@ export default defineComponent({
 })
 ```
 
-Slots in JSX
+## Slots 使用
+
 ```tsx
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue"
 
 export default defineComponent({
-  name: 'Card',
+  name: "Card",
   setup(props, { slots }) {
     return () => (
       <div class="card">
@@ -145,32 +167,23 @@ export default defineComponent({
     )
   }
 })
-
-// Usage
-<Card>
-  {{
-    header: () => <h2>Title</h2>,
-    default: () => <p>Content</p>,
-    footer: () => <button>Action</button>
-  }}
-</Card>
 ```
 
-V-Model in JSX
-```tsx
-import { defineComponent, ref } from 'vue'
+## V-Model 实现
 
-// Custom component with v-model
+```tsx
+import { defineComponent, ref } from "vue"
+
 export const CustomInput = defineComponent({
-  name: 'CustomInput',
+  name: "CustomInput",
   props: {
     modelValue: String
   },
-  emits: ['update:modelValue'],
+  emits: ["update:modelValue"],
   setup(props, { emit }) {
     const handleInput = (e: Event) => {
       const target = e.target as HTMLInputElement
-      emit('update:modelValue', target.value)
+      emit("update:modelValue", target.value)
     }
 
     return () => (
@@ -183,14 +196,15 @@ export const CustomInput = defineComponent({
   }
 })
 
-// Usage
-const text = ref('')
-<CustomInput v-model={text.value} />
+// 使用方式
+const text = ref("")
+<CustomInput vModel={text.value} />
 ```
 
-TypeScript with JSX
+## TypeScript 集成
+
 ```tsx
-import { defineComponent, ref, PropType } from 'vue'
+import { defineComponent, ref, PropType } from "vue"
 
 interface Product {
   id: string
@@ -200,7 +214,7 @@ interface Product {
 }
 
 export default defineComponent({
-  name: 'ProductCard',
+  name: "ProductCard",
   props: {
     product: {
       type: Object as PropType<Product>,
@@ -208,7 +222,7 @@ export default defineComponent({
     }
   },
   emits: {
-    addToCart: (productId: string) => typeof productId === 'string',
+    addToCart: (productId: string) => typeof productId === "string",
     viewDetails: (product: Product) => !!product.id
   },
   setup(props, { emit }) {
@@ -216,7 +230,7 @@ export default defineComponent({
 
     const handleAddToCart = () => {
       if (props.product.inStock) {
-        emit('addToCart', props.product.id)
+        emit("addToCart", props.product.id)
       }
     }
 
@@ -233,7 +247,7 @@ export default defineComponent({
         </div>
         <input
           type="number"
-          v-model={quantity.value}
+          vModel={quantity.value}
           min="1"
           disabled={!props.product.inStock}
         />
@@ -249,166 +263,8 @@ export default defineComponent({
 })
 ```
 
-Conditional Rendering
-```tsx
-// Ternary operator
-{isLoading.value ? <Spinner /> : <Content />}
+## 最佳实践
 
-// Logical AND
-{hasError.value && <ErrorMessage error={error.value} />}
-
-// Multiple conditions
-{
-  status.value === 'loading' ? <Spinner /> :
-  status.value === 'error' ? <Error /> :
-  <Content />
-}
-```
-
-List Rendering with Key
-```tsx
-const items = ref([
-  { id: 1, name: 'Item 1' },
-  { id: 2, name: 'Item 2' },
-  { id: 3, name: 'Item 3' }
-])
-
-return () => (
-  <ul>
-    {items.value.map(item => (
-      <li key={item.id}>{item.name}</li>
-    ))}
-  </ul>
-)
-```
-
-Composables with JSX
-```tsx
-import { ref } from 'vue'
-
-// Composable
-export function useCounter(initialValue = 0) {
-  const count = ref(initialValue)
-  const increment = () => count.value++
-  const decrement = () => count.value--
-  const reset = () => count.value = initialValue
-
-  return {
-    count,
-    increment,
-    decrement,
-    reset
-  }
-}
-
-// Usage in component
-import { defineComponent } from 'vue'
-import { useCounter } from './composables/useCounter'
-
-export default defineComponent({
-  name: 'CounterApp',
-  setup() {
-    const { count, increment, decrement, reset } = useCounter(10)
-
-    return () => (
-      <div>
-        <h1>Count: {count.value}</h1>
-        <button onClick={increment}>+</button>
-        <button onClick={decrement}>-</button>
-        <button onClick={reset}>Reset</button>
-      </div>
-    )
-  }
-})
-```
-
-Dynamic Components
-```tsx
-import { defineComponent, ref, Component } from 'vue'
-import TabA from './TabA'
-import TabB from './TabB'
-
-export default defineComponent({
-  setup() {
-    const currentTab = ref<Component>(TabA)
-
-    const switchTab = (tab: Component) => {
-      currentTab.value = tab
-    }
-
-    return () => (
-      <div>
-        <button onClick={() => switchTab(TabA)}>Tab A</button>
-        <button onClick={() => switchTab(TabB)}>Tab B</button>
-        <currentTab.value />
-      </div>
-    )
-  }
-})
-```
-
-Lifecycle Hooks
-```tsx
-import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue'
-
-export default defineComponent({
-  setup() {
-    const data = ref<any>(null)
-    let timer: number
-
-    onMounted(async () => {
-      // Fetch data
-      const response = await fetch('/api/data')
-      data.value = await response.json()
-
-      // Setup timer
-      timer = window.setInterval(() => {
-        console.log('Tick')
-      }, 1000)
-    })
-
-    onBeforeUnmount(() => {
-      // Cleanup
-      if (timer) clearInterval(timer)
-    })
-
-    return () => (
-      <div>
-        {data.value ? (
-          <pre>{JSON.stringify(data.value, null, 2)}</pre>
-        ) : (
-          <p>Loading...</p>
-        )}
-      </div>
-    )
-  }
-})
-```
-
-Directives in JSX
-```tsx
-import { defineComponent, ref, withDirectives, vShow } from 'vue'
-
-export default defineComponent({
-  setup() {
-    const isVisible = ref(true)
-
-    return () => (
-      <div>
-        {withDirectives(
-          <div>This can be hidden</div>,
-          [[vShow, isVisible.value]]
-        )}
-        <button onClick={() => isVisible.value = !isVisible.value}>
-          Toggle
-        </button>
-      </div>
-    )
-  }
-})
-```
-
-Best Practices
 - Use TypeScript for type safety
 - Keep JSX components pure and focused
 - Extract complex logic into composables
@@ -418,18 +274,19 @@ Best Practices
 - Use async components for code splitting
 - Follow Vue 3 Composition API patterns
 
-Testing
+## 测试
+
 - Use Vitest or Jest for unit testing
 - Test components with Vue Test Utils
 - Mock composables and external dependencies
 - Test user interactions and edge cases
 
-Dependencies
+## 依赖
+
 - Vue 3.x
 - TypeScript 5.x
 - Vite (recommended)
 - @vitejs/plugin-vue-jsx
 - Vue Test Utils (for testing)
 
-Refer to Vue 3 and JSX/TSX documentation for detailed guidance.
-
+参考 Vue 3 和 JSX/TSX 官方文档以获取详细指导。

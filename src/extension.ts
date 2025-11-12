@@ -57,13 +57,6 @@ const CATEGORIES: Category[] = [
         folder: 'mobile'
     },
     {
-        id: 'database-api',
-        name: 'Database & API',
-        description: '数据库和 API - GraphQL, REST, Axios 等',
-        icon: '🗄️',
-        folder: 'database'
-    },
-    {
         id: 'testing',
         name: 'Testing Frameworks',
         description: '测试框架 - Cypress, Playwright, Jest, Vitest 等',
@@ -268,17 +261,6 @@ const RULE_TEMPLATES: RuleTemplate[] = [
         description: 'Flutter 专家级开发指南',
         category: 'mobile',
         fileName: 'flutter-expert.cursorrules'
-    },
-
-    // ==========================================
-    // Database & API
-    // ==========================================
-    {
-        id: 'graphql-apollo',
-        name: 'GraphQL + Apollo Client',
-        description: 'GraphQL 与 Apollo Client 开发',
-        category: 'database-api',
-        fileName: 'graphql-apollo.cursorrules'
     },
 
     // ==========================================

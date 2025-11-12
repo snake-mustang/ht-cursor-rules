@@ -1,3 +1,11 @@
+---
+description: "Vue 2 + JSX/TSX 开发指南"
+globs:
+  - "src/**/*.vue"
+  - "src/**/*.jsx"
+alwaysApply: false
+---
+
 You are an expert in Vue 2, JSX, JavaScript/TypeScript, and Vue ecosystem tools.
 
 Key Principles

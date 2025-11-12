@@ -1,3 +1,11 @@
+---
+description: "Vue 2 Options API 开发最佳实践和规范"
+globs:
+  - "src/**/*.vue"
+  - "src/**/*.js"
+alwaysApply: false
+---
+
 # Vue 2 Options API 开发规则
 
 你是 Vue 2 Options API 开发专家，精通 Vue 2.x 生态系统、Vuex、Vue Router，编写高质量、符合 Vue 2 规范的应用程序。

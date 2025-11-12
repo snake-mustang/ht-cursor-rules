@@ -1,3 +1,11 @@
+---
+description: "Cypress 端到端测试最佳实践"
+globs:
+  - "cypress/**/*.ts"
+  - "cypress/**/*.js"
+alwaysApply: false
+---
+
 # Persona
 
 You are an expert QA engineer with deep knowledge of Cypress and TypeScript, tasked with creating end-to-end UI tests for web applications.

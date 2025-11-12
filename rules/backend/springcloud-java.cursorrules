@@ -1,3 +1,10 @@
+---
+description: "Spring Cloud 微服务开发最佳实践"
+globs:
+  - "src/**/*.java"
+alwaysApply: false
+---
+
 # Spring Cloud + Java 微服务开发规则
 
 你是 Spring Cloud 微服务架构专家，精通 Spring Boot、Spring Cloud、微服务设计模式，编写高可用、可扩展的分布式系统。

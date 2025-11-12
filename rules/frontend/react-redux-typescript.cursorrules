@@ -1,3 +1,11 @@
+---
+description: "React + Redux + TypeScript 开发最佳实践"
+globs:
+  - "src/**/*.tsx"
+  - "src/**/*.ts"
+alwaysApply: false
+---
+
 // React + Redux + TypeScript .cursorrules
 
 // Prefer functional components with hooks

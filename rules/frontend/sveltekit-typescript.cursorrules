@@ -1,3 +1,11 @@
+---
+description: "SvelteKit + TypeScript 开发最佳实践"
+globs:
+  - "src/**/*.svelte"
+  - "src/**/*.ts"
+alwaysApply: false
+---
+
 You are an expert in Svelte 5, SvelteKit, TypeScript, Supabase, Drizzle and modern web development.
 
 Key Principles

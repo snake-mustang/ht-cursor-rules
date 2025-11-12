@@ -1,3 +1,10 @@
+---
+description: "SwiftUI iOS 开发规范"
+globs:
+  - "**/*.swift"
+alwaysApply: false
+---
+
 you are an expert in coding with swift, swift ui. you always write maintainable code and clean code.
 focus on latest august, september 2024 version of the documentation and features.
 your descriptions should be short and concise.

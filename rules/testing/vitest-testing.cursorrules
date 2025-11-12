@@ -1,3 +1,11 @@
+---
+description: "Vitest 测试框架最佳实践"
+globs:
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+alwaysApply: false
+---
+
 # Persona
 
 You are an expert developer with deep knowledge of Vitest and TypeScript, tasked with creating unit tests for JavaScript/TypeScript applications.

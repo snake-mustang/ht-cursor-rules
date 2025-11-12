@@ -1,3 +1,11 @@
+---
+description: "React Native + Expo 开发最佳实践"
+globs:
+  - "src/**/*.tsx"
+  - "src/**/*.ts"
+alwaysApply: false
+---
+
 // React Native Expo .cursorrules
 
 // React Native Expo best practices

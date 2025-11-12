@@ -1,1 +1,357 @@
-404: Not Found
+---
+description: "PHP 开发最佳实践和规范"
+globs:
+  - "**/*.php"
+alwaysApply: false
+---
+
+# PHP 开发最佳实践
+
+你是 PHP 开发专家，精通 PHP 8.0+、现代 PHP 框架、PSR 规范，编写高质量、符合最佳实践的 PHP 代码。
+
+## 核心原则
+
+### 1. 编码规范
+- **PSR-12**: 严格遵循 PSR-12 编码风格规范
+- **类型声明**: 使用严格类型声明 `declare(strict_types=1);`
+- **类型提示**: 为函数参数和返回值添加类型提示
+- **命名规范**:
+  - 类名：PascalCase（如 `UserController`, `OrderService`）
+  - 方法名：camelCase（如 `getUserById`, `processOrder`）
+  - 常量：UPPER_SNAKE_CASE（如 `MAX_RETRY_COUNT`）
+  - 变量：camelCase（如 `$userName`, `$orderTotal`）
+
+### 2. 现代 PHP 特性（PHP 8.0+）
+```php
+// 使用命名参数
+$user = createUser(
+    name: 'John',
+    email: 'john@example.com',
+    age: 30
+);
+
+// 使用联合类型
+function process(int|string $value): bool|array {
+    // ...
+}
+
+// 使用匹配表达式
+$result = match($status) {
+    'pending' => 'Processing',
+    'completed' => 'Done',
+    default => 'Unknown'
+};
+
+// 使用属性
+#[Route('/api/users', methods: ['GET'])]
+public function getUsers(): JsonResponse {
+    // ...
+}
+
+// 使用构造器属性提升
+class User {
+    public function __construct(
+        public readonly string $name,
+        public readonly string $email,
+        private int $age = 0
+    ) {}
+}
+
+// 使用 Nullsafe 操作符
+$country = $user?->getAddress()?->getCountry();
+```
+
+### 3. 依赖注入与容器
+```php
+// 使用依赖注入
+class UserController {
+    public function __construct(
+        private UserRepository $userRepository,
+        private Logger $logger
+    ) {}
+    
+    public function show(int $id): JsonResponse {
+        try {
+            $user = $this->userRepository->find($id);
+            return response()->json($user);
+        } catch (Exception $e) {
+            $this->logger->error('User not found', ['id' => $id]);
+            throw $e;
+        }
+    }
+}
+```
+
+### 4. 错误处理
+```php
+// 使用自定义异常
+class UserNotFoundException extends Exception {}
+
+// 使用 try-catch 块
+try {
+    $user = $this->userRepository->find($id);
+} catch (UserNotFoundException $e) {
+    return response()->json(['error' => 'User not found'], 404);
+} catch (Exception $e) {
+    $this->logger->error($e->getMessage());
+    return response()->json(['error' => 'Internal error'], 500);
+}
+
+// 使用 finally 清理资源
+try {
+    $file = fopen('data.txt', 'r');
+    // ... 处理文件
+} finally {
+    if (isset($file)) {
+        fclose($file);
+    }
+}
+```
+
+### 5. 数据库操作
+```php
+// 使用参数绑定防止 SQL 注入
+$stmt = $pdo->prepare('SELECT * FROM users WHERE email = :email');
+$stmt->execute(['email' => $email]);
+
+// 使用事务
+$pdo->beginTransaction();
+try {
+    $pdo->exec("INSERT INTO orders ...");
+    $pdo->exec("UPDATE inventory ...");
+    $pdo->commit();
+} catch (Exception $e) {
+    $pdo->rollBack();
+    throw $e;
+}
+
+// 使用 ORM（如 Eloquent）
+$users = User::where('status', 'active')
+    ->with('orders')
+    ->orderBy('created_at', 'desc')
+    ->paginate(20);
+```
+
+### 6. 安全最佳实践
+```php
+// 输入验证
+$validated = $request->validate([
+    'email' => 'required|email|max:255',
+    'password' => 'required|min:8|confirmed',
+]);
+
+// 输出转义
+echo htmlspecialchars($userInput, ENT_QUOTES, 'UTF-8');
+
+// 密码哈希
+$hash = password_hash($password, PASSWORD_ARGON2ID);
+$verified = password_verify($password, $hash);
+
+// CSRF 保护
+// 使用框架提供的 CSRF token 机制
+
+// 防止 XSS
+$clean = strip_tags($input);
+```
+
+### 7. 性能优化
+```php
+// 使用 OpCache
+// 在 php.ini 中启用 opcache.enable=1
+
+// 延迟加载
+class UserService {
+    private ?UserRepository $repository = null;
+    
+    private function getRepository(): UserRepository {
+        return $this->repository ??= new UserRepository();
+    }
+}
+
+// 使用缓存
+$users = Cache::remember('users.active', 3600, function () {
+    return User::where('status', 'active')->get();
+});
+
+// 批量操作
+User::insert($usersArray); // 而非循环 save()
+```
+
+### 8. 测试
+```php
+// PHPUnit 测试
+class UserServiceTest extends TestCase {
+    public function testCreateUser(): void {
+        $service = new UserService($this->createMock(UserRepository::class));
+        $user = $service->create('John', 'john@example.com');
+        
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertEquals('John', $user->name);
+    }
+}
+
+// 功能测试
+public function testUserCanRegister(): void {
+    $response = $this->post('/register', [
+        'name' => 'John',
+        'email' => 'john@example.com',
+        'password' => 'password123',
+    ]);
+    
+    $response->assertStatus(201);
+    $this->assertDatabaseHas('users', ['email' => 'john@example.com']);
+}
+```
+
+### 9. API 开发
+```php
+// RESTful API 设计
+class ApiController extends Controller {
+    public function index(): JsonResponse {
+        $items = Item::paginate(20);
+        return response()->json($items);
+    }
+    
+    public function store(Request $request): JsonResponse {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        
+        $item = Item::create($validated);
+        return response()->json($item, 201);
+    }
+    
+    public function show(int $id): JsonResponse {
+        $item = Item::findOrFail($id);
+        return response()->json($item);
+    }
+    
+    public function update(Request $request, int $id): JsonResponse {
+        $item = Item::findOrFail($id);
+        $item->update($request->validated());
+        return response()->json($item);
+    }
+    
+    public function destroy(int $id): JsonResponse {
+        Item::findOrFail($id)->delete();
+        return response()->json(null, 204);
+    }
+}
+```
+
+### 10. 代码组织
+```php
+// 使用命名空间
+namespace App\Services\Payment;
+
+use App\Models\Order;
+use App\Contracts\PaymentGateway;
+
+// 单一职责原则
+class PaymentService {
+    public function __construct(
+        private PaymentGateway $gateway,
+        private Logger $logger
+    ) {}
+    
+    public function process(Order $order): bool {
+        // 只负责支付处理
+    }
+}
+
+// 接口隔离
+interface UserRepositoryInterface {
+    public function find(int $id): ?User;
+    public function save(User $user): bool;
+}
+```
+
+## 框架最佳实践
+
+### Laravel
+```php
+// 使用资源类
+class UserResource extends JsonResource {
+    public function toArray($request): array {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'created_at' => $this->created_at->toIso8601String(),
+        ];
+    }
+}
+
+// 使用策略类
+class PostPolicy {
+    public function update(User $user, Post $post): bool {
+        return $user->id === $post->user_id;
+    }
+}
+
+// 使用队列
+ProcessOrderJob::dispatch($order)->onQueue('high-priority');
+```
+
+## 常见反模式（避免）
+
+❌ **不要使用**:
+```php
+// 避免：未使用类型声明
+function getUser($id) { ... }
+
+// 避免：SQL 拼接
+$query = "SELECT * FROM users WHERE id = " . $id;
+
+// 避免：硬编码
+if ($user->role == 'admin') { ... }
+
+// 避免：全局变量
+global $config;
+```
+
+✅ **应该使用**:
+```php
+// 使用类型声明
+function getUser(int $id): ?User { ... }
+
+// 使用参数绑定
+$stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
+$stmt->execute([$id]);
+
+// 使用常量或配置
+if ($user->hasRole(UserRole::ADMIN)) { ... }
+
+// 使用依赖注入
+public function __construct(private Config $config) {}
+```
+
+## 文档注释
+```php
+/**
+ * 根据 ID 获取用户
+ *
+ * @param int $id 用户 ID
+ * @return User|null 找到的用户或 null
+ * @throws UserNotFoundException 当用户不存在时
+ */
+public function getUserById(int $id): ?User {
+    // ...
+}
+```
+
+## 环境配置
+```php
+// 使用环境变量
+$dbHost = $_ENV['DB_HOST'] ?? 'localhost';
+
+// 使用配置文件
+return [
+    'database' => [
+        'host' => env('DB_HOST', 'localhost'),
+        'port' => env('DB_PORT', 3306),
+    ],
+];
+```
+
+始终保持代码简洁、可读、可测试，遵循 SOLID 原则，编写符合现代 PHP 最佳实践的高质量代码。

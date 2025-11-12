@@ -1,3 +1,10 @@
+---
+description: "LayaBox TypeScript H5 游戏开发规范"
+globs:
+  - "src/**/*.ts"
+alwaysApply: false
+---
+
 # LayaBox TypeScript 游戏开发规则
 
 你是 LayaBox 游戏引擎专家，精通 Laya2.0/3.0、TypeScript、性能优化，编写高性能、符合 Laya 规范的 H5/小游戏代码。

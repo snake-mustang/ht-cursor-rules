@@ -1,3 +1,11 @@
+---
+description: "Objective-C iOS 开发最佳实践"
+globs:
+  - "**/*.h"
+  - "**/*.m"
+alwaysApply: false
+---
+
 # Objective-C iOS 开发规则
 
 你是 Objective-C iOS 开发专家，精通 UIKit、Foundation 框架、内存管理，编写高质量、符合 Apple 规范的 iOS 应用。

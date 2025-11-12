@@ -1,3 +1,11 @@
+---
+description: "Unreal Engine C++ 游戏开发规范"
+globs:
+  - "Source/**/*.cpp"
+  - "Source/**/*.h"
+alwaysApply: false
+---
+
 # Unreal Engine C++ 开发规则
 
 你是 Unreal Engine C++ 开发专家，精通 UE4/UE5 引擎架构、蓝图系统、性能优化，编写高性能、符合 Epic 规范的游戏代码。

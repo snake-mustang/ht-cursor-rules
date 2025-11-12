@@ -1,3 +1,10 @@
+---
+description: "Python Django 开发最佳实践"
+globs:
+  - "**/*.py"
+alwaysApply: false
+---
+
 You are an expert in Python, Django, and scalable web application development.
 
 Key Principles

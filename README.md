@@ -1,18 +1,10 @@
 # HT Cursor Rules
 
-🚀 一键添加 Cursor AI 编程规则的 VSCode/Cursor 扩展，26 种精选技术栈规则！
+🚀 **一键安装，一键配置！** 为 Cursor AI 快速添加编程规则的 VSCode/Cursor 扩展。提供前端、后端、游戏研发、原生开发、测试等 28 种精选规则模板。
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
-
----
-
-## 💡 需要其他技术栈规则？
-
-**如果您需要的技术栈规则不在列表中，请[提交 Issue](https://github.com/snake-mustang/ht-cursor-rules/issues/new)！**
-
-我们会尽快添加您需要的规则，帮助团队提升开发效率。所有建议都会被认真考虑并快速响应。
 
 ---
 
@@ -24,54 +16,67 @@
 
 如果这个插件对您有帮助，请到 [GitHub](https://github.com/snake-mustang/ht-cursor-rules) 给个 Star ⭐️，这是对我最大的鼓励和支持！
 
----
+### 💡 需要其他技术栈规则？
 
-## 🎯 什么是 .cursorrules？
-
-`.cursorrules` 是 Cursor AI 的强大功能，允许开发者为项目定义专属的 AI 指令。使用它的理由：
-
-✨ **定制 AI 行为**：根据项目需求定制 AI 响应，确保代码建议更相关、更准确
-
-📏 **保持一致性**：定义编码标准和最佳实践，确保 AI 生成符合项目风格的代码
-
-🎯 **上下文感知**：为 AI 提供项目重要上下文（常用方法、架构决策、特定库），生成更明智的代码
-
-⚡ **提高生产力**：精准的规则让 AI 生成的代码更少需要手动编辑，加速开发流程
-
-👥 **团队协作**：共享 `.cursorrules` 文件确保团队成员获得一致的 AI 辅助
-
-🔧 **项目专属知识**：包含项目结构、依赖、独特需求信息，提供更准确的建议
-
-通过在项目根目录创建 `.cursorrules` 文件，您可以充分利用这些优势，提升 Cursor AI 编码体验。
+如果您需要的技术栈规则不在列表中，请[提交 Issue](https://github.com/snake-mustang/ht-cursor-rules/issues/new)！我们会尽快添加您需要的规则，帮助团队提升开发效率。
 
 ---
 
 ## 📖 快速开始
 
-### ⚡ 三步使用
+### ⚡ 一键安装，一键配置，简单三步
 
-```
-1️⃣ 安装插件 → 2️⃣ 打开命令面板 → 3️⃣ 选择规则添加
-```
+**1️⃣ 安装插件**：在扩展市场搜索 `HT Cursor Rules` → 点击安装
 
-### 使用方法
+**2️⃣ 打开命令**：按 `Ctrl+Shift+P` (Mac: `Cmd+Shift+P`) → 输入 `HT`
 
-1. **打开命令面板**
-   - Windows/Linux: `Ctrl+Shift+P`
-   - macOS: `Cmd+Shift+P`
+**3️⃣ 选择规则**：选择技术类别 → 选择具体规则 → 选择添加方式（覆盖/合并）→ ✅ 完成！
 
-2. **输入命令**
-   - 输入 `HT` 或 `ht-rules`
-   - 选择 `HT: 添加 Cursor 规则文件`
+---
 
-3. **选择规则**
-   - **第一步**：选择技术类别（7 大类）
-   - **第二步**：选择具体规则（26 种规则）
-   - **第三步**：选择添加方式（覆盖/合并/取消）
+## 🎬 使用演示
 
-4. **完成**
-   - ✅ 规则已添加到项目根目录的 `.cursorrules` 文件
-   - 🎉 Cursor AI 现在会根据规则提供更专业的建议！
+### 视频演示
+
+[![使用演示视频](https://pingtai-img.shiyue.com/bbs/others/ai/htcursor-pic.png)](https://pingtai-img.shiyue.com/bbs/others/ai/ys-cursorrules.mp4)
+
+*点击图片观看使用演示视频*
+
+### 效果预览
+
+![效果预览](https://pingtai-img.shiyue.com/bbs/others/ai/htcursor-pic.png)
+
+---
+
+## 💡 使用场景
+
+**🌐 Web 全栈开发**：React/Vue + FastAPI/Django + Jest/Vitest  
+**📱 移动应用开发**：SwiftUI/Objective-C (iOS) + Jetpack Compose (Android) + React Native/Flutter (跨平台)  
+**🎮 游戏开发**：Unity (C#) + Unreal (C++) + Cocos/LayaBox (H5游戏)  
+**🏢 企业级应用**：SpringBoot/Spring Cloud (Java) + FastAPI/Django (Python) + Go + PHP 微服务
+
+---
+
+## 📦 安装
+
+**方式1（推荐）**：在 Cursor/VSCode 中按 `Ctrl+Shift+X` → 搜索 `HT Cursor Rules` → 点击安装
+
+**方式2**：访问 [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules) 安装
+
+---
+
+## 🎯 什么是 .cursorrules？
+
+`.cursorrules` 是 Cursor AI 的强大功能，允许开发者为项目定义专属的 AI 指令。
+
+**核心优势**：
+- ✨ **定制 AI 行为**：根据项目需求定制 AI 响应，确保代码建议更相关、更准确
+- 📏 **保持一致性**：定义编码标准和最佳实践，确保 AI 生成符合项目风格的代码
+- 🎯 **上下文感知**：为 AI 提供项目重要上下文（常用方法、架构决策、特定库）
+- ⚡ **提高生产力**：精准的规则让 AI 生成的代码更少需要手动编辑，加速开发流程
+- 👥 **团队协作**：共享 `.cursorrules` 文件确保团队成员获得一致的 AI 辅助
+
+通过在项目根目录创建 `.cursorrules` 文件，您可以充分利用这些优势，提升 Cursor AI 编码体验。
 
 ---
 
@@ -121,12 +126,6 @@
 | **Android Jetpack Compose** | Android Jetpack Compose 开发 | Android 现代应用 |
 | **Flutter Expert** | Flutter 专家级开发 | Flutter 跨平台应用 |
 
-### 🗄️ 数据库 & API（1 种）
-
-| 规则 | 说明 | 适用场景 |
-|------|------|----------|
-| **GraphQL + Apollo** | GraphQL + Apollo Client 开发 | GraphQL API 应用 |
-
 ### 🧪 测试框架（4 种）
 
 | 规则 | 说明 | 适用场景 |
@@ -155,16 +154,15 @@
 选择类别 → 选择规则 → 添加完成
 ```
 
-**第一级**：7 大技术类别
+**第一级**：6 大技术类别
 - 🎨 Frontend Frameworks
 - 🚀 Backend & Full-Stack
 - 🎮 Game Development
 - 📱 Mobile Development
-- 🗄️ Database & API
 - 🧪 Testing Frameworks
 - 📂 Other
 
-**第二级**：26 种精选规则
+**第二级**：28 种精选规则
 - 涵盖主流技术栈
 - **Vue生态特别完善**（5种规则，公司主力技术栈）
 - 包含完整开发规范
@@ -181,83 +179,6 @@
 添加成功后可以：
 - 点击"查看文件"按钮立即查看规则内容
 - 在项目根目录找到 `.cursorrules` 文件
-
----
-
-## 📦 安装
-
-### 在 Cursor 中安装
-
-1. 按 `Ctrl+Shift+X` 打开扩展市场
-2. 搜索 **"HT Cursor Rules"**
-3. 点击安装
-
-### 在 VSCode 中安装
-
-同样步骤，或访问 [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
-
----
-
-## 💡 使用场景
-
-### 🌐 Web 全栈开发
-
-**前端 + 后端 + 数据库**
-
-```
-选择场景：
-- React + Next.js (前端)
-- FastAPI/Django (后端)
-- GraphQL + Apollo (API)
-- Jest/Vitest (测试)
-
-添加规则 → 团队统一规范 → 提高开发效率
-```
-
-### 📱 移动应用开发
-
-**iOS + Android + 跨平台**
-
-```
-iOS 开发：
-- SwiftUI (现代应用)
-- Objective-C (维护项目)
-
-Android 开发：
-- Jetpack Compose
-
-跨平台开发：
-- React Native
-- Flutter
-```
-
-### 🎮 游戏开发
-
-**Unity + Unreal + H5 游戏**
-
-```
-3D 游戏：
-- Unity (C#)
-- Unreal Engine (C++)
-
-2D/H5 游戏：
-- Cocos Creator
-- LayaBox
-```
-
-### 🏢 企业级应用
-
-**微服务 + 分布式系统**
-
-```
-Java 生态：
-- SpringBoot (单体应用)
-- Spring Cloud (微服务)
-
-Python 生态：
-- FastAPI (高性能 API)
-- Django (全栈应用)
-```
 
 ---
 
@@ -306,7 +227,7 @@ Python 生态：
 2. 选择"合并"
 3. 添加 Python FastAPI 规则
 4. 选择"合并"
-5. 添加 GraphQL + Apollo 规则
+5. 添加 Jest 测试规则
 
 结果：.cursorrules 包含三种技术栈的规则
 ```
@@ -365,14 +286,12 @@ Python 生态：
 
 ### ✅ 精选规则
 
-- 26 种精选规则，覆盖主流技术栈
+- 28 种精选规则，覆盖主流技术栈
 - **Vue 生态特别完善**：5种规则（Vue2/Vue3 + JSX + Nuxt）
 - 规则质量高，内容详尽（1000-2000+ 行）
 - 包含完整代码示例和最佳实践
 
 ### ✅ 持续更新
-
-- 规则来自 [awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules) 社区
 - 部分规则专门定制（Vue2, React+Next.js, Spring Cloud, Objective-C, 游戏开发）
 - 持续更新和优化
 
@@ -433,18 +352,17 @@ A: 可以！插件同时支持 Cursor 和 VSCode，但 `.cursorrules` 功能在 
 #### 🎉 首次发布
 
 **核心功能**
-- ✨ 支持 23 种精选技术栈规则
+- ✨ 支持 28 种精选技术栈规则
 - 🎯 两级选择系统（类别 → 规则）
 - 📁 子文件夹分类管理
 - 🔄 智能规则管理（覆盖/合并/取消）
 
 **规则分类**
-- 🎨 **Frontend** (6 种)：Angular, React+Redux, React+Next.js, Svelte, Vue2, Vue+Nuxt
-- 🚀 **Backend** (6 种)：FastAPI, Django, Go, SpringBoot, Spring Cloud, PHP
-- 📱 **Mobile** (5 种)：React Native, SwiftUI, Objective-C, Android, Flutter
-- 🗄️ **Database/API** (1 种)：GraphQL + Apollo
+- 🎨 **Frontend** (9 种)：Vue 2/3 系列（5种）, React 系列（2种）, Angular, SvelteKit
+- 🚀 **Backend** (6 种)：Go, Java SpringBoot, Spring Cloud, PHP, Python FastAPI, Python Django
+- 🎮 **Game** (4 种)：Unity (C#), Unreal (C++), Cocos (TypeScript), LayaBox (TypeScript)
+- 📱 **Mobile** (5 种)：React Native, SwiftUI, Objective-C, Android Jetpack, Flutter
 - 🧪 **Testing** (4 种)：Cypress, Playwright, Jest, Vitest
-- 🎮 **Game** (4 种)：Unity, Unreal, Cocos, LayaBox
 
 **特色规则**
 - Vue 2 Options API 完整开发指南（1000+ 行）
@@ -466,8 +384,6 @@ A: 可以！插件同时支持 Cursor 和 VSCode，但 `.cursorrules` 功能在 
 ## 🙏 致谢
 
 感谢以下资源和社区：
-
-- [awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules) 开源社区
 - Cursor AI 官方文档
 - 所有贡献者和使用者
 

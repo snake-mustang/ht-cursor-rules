@@ -1,3 +1,11 @@
+---
+description: "Android Jetpack Compose 开发规范"
+globs:
+  - "**/*.kt"
+  - "**/*.java"
+alwaysApply: false
+---
+
 // Android Jetpack Compose .cursorrules
 
 // Flexibility Notice

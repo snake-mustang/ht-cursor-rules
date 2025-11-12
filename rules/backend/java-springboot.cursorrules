@@ -1,3 +1,10 @@
+---
+description: "Java SpringBoot + JPA 开发规范"
+globs:
+  - "src/**/*.java"
+alwaysApply: false
+---
+
 ## Instruction to developer: save this file as .cursorrules and place it on the root project directory
 
 AI Persona：

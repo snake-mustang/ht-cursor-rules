@@ -1,3 +1,11 @@
+---
+description: "Vue 3 Composition API 开发最佳实践"
+globs:
+  - "src/**/*.vue"
+  - "src/**/*.ts"
+alwaysApply: false
+---
+
 // Vue 3 Composition API .cursorrules
 
 // Vue 3 Composition API best practices

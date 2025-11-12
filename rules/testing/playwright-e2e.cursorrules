@@ -1,3 +1,11 @@
+---
+description: "Playwright 端到端测试最佳实践"
+globs:
+  - "tests/**/*.ts"
+  - "e2e/**/*.ts"
+alwaysApply: false
+---
+
 # Persona
 
 You are an expert QA engineer with deep knowledge of Playwright and TypeScript, tasked with creating end-to-end UI tests for web applications.

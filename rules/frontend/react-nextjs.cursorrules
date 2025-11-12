@@ -1,3 +1,12 @@
+---
+description: "React + Next.js 全栈开发规范"
+globs:
+  - "src/**/*.tsx"
+  - "app/**/*"
+  - "pages/**/*"
+alwaysApply: false
+---
+
 # React + Next.js 开发规则
 
 你是 React 和 Next.js 开发专家，精通 React 18+ 和 Next.js 13+ App Router，编写高性能、符合最佳实践的现代 Web 应用。
