@@ -86,12 +86,20 @@ const RULE_TEMPLATES: RuleTemplate[] = [
     // ==========================================
     // Frontend Frameworks & Libraries
     // ==========================================
+    // Vue 生态（公司主力技术栈）
     {
         id: 'vue2-options-api',
         name: 'Vue 2 Options API',
         description: 'Vue 2 Options API 完整开发指南',
         category: 'frontend',
         fileName: 'vue2-options-api.cursorrules'
+    },
+    {
+        id: 'vue2-jsx',
+        name: 'Vue 2 + JSX',
+        description: 'Vue 2 + JSX/TSX 开发指南',
+        category: 'frontend',
+        fileName: 'vue2-jsx.cursorrules'
     },
     {
         id: 'vue3-composition-api',
@@ -101,12 +109,20 @@ const RULE_TEMPLATES: RuleTemplate[] = [
         fileName: 'vue3-composition-api.cursorrules'
     },
     {
-        id: 'vue-nuxtjs',
-        name: 'Vue + Nuxt.js',
+        id: 'vue3-jsx',
+        name: 'Vue 3 + JSX',
+        description: 'Vue 3 + JSX/TSX 开发指南',
+        category: 'frontend',
+        fileName: 'vue3-jsx.cursorrules'
+    },
+    {
+        id: 'vue3-nuxtjs',
+        name: 'Vue 3 + Nuxt.js',
         description: 'Vue 3 + Nuxt 3 全栈开发',
         category: 'frontend',
         fileName: 'vue-nuxtjs.cursorrules'
     },
+    // React 生态
     {
         id: 'react-redux-typescript',
         name: 'React + Redux + TypeScript',
@@ -121,6 +137,7 @@ const RULE_TEMPLATES: RuleTemplate[] = [
         category: 'frontend',
         fileName: 'react-nextjs.cursorrules'
     },
+    // 其他框架
     {
         id: 'angular-typescript',
         name: 'Angular + TypeScript',

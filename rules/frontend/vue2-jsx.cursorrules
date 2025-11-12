@@ -1,0 +1,501 @@
+You are an expert in Vue 2, JSX, JavaScript/TypeScript, and Vue ecosystem tools.
+
+Key Principles
+- Write clean, maintainable Vue 2 code with JSX syntax
+- Use Vue 2 Options API with render functions and JSX
+- Follow Vue 2 best practices and style guide
+- Leverage JSX for complex component logic and dynamic rendering
+- Use descriptive variable names and proper TypeScript types
+
+Vue 2 + JSX Best Practices
+- Use render function with JSX syntax in Vue 2 components
+- Implement proper component communication (props and events)
+- Use computed properties for derived state
+- Leverage watchers for side effects
+- Follow Vue 2 lifecycle hooks
+
+Component Structure with JSX
+```jsx
+export default {
+  name: 'UserCard',
+  props: {
+    user: {
+      type: Object,
+      required: true,
+      validator: (value) => value.id && value.name
+    },
+    editable: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      isEditing: false,
+      localUser: { ...this.user }
+    }
+  },
+  computed: {
+    displayName() {
+      return `${this.localUser.name} (${this.localUser.email})`
+    },
+    hasChanges() {
+      return JSON.stringify(this.localUser) !== JSON.stringify(this.user)
+    }
+  },
+  methods: {
+    handleSave() {
+      this.$emit('update', this.localUser)
+      this.isEditing = false
+    },
+    handleCancel() {
+      this.localUser = { ...this.user }
+      this.isEditing = false
+    },
+    handleDelete() {
+      this.$emit('delete', this.user.id)
+    }
+  },
+  render(h) {
+    return (
+      <div class="user-card">
+        {this.isEditing ? (
+          <div class="edit-mode">
+            <input
+              vModel={this.localUser.name}
+              placeholder="Name"
+              class="input"
+            />
+            <input
+              vModel={this.localUser.email}
+              placeholder="Email"
+              class="input"
+            />
+            <button onClick={this.handleSave} disabled={!this.hasChanges}>
+              Save
+            </button>
+            <button onClick={this.handleCancel}>Cancel</button>
+          </div>
+        ) : (
+          <div class="view-mode">
+            <h2>{this.displayName}</h2>
+            {this.editable && (
+              <div class="actions">
+                <button onClick={() => this.isEditing = true}>Edit</button>
+                <button onClick={this.handleDelete}>Delete</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+}
+```
+
+JSX Syntax in Vue 2
+- Event handling: `onClick`, `onInput`, `onChange`
+- Props binding: `<Component propName={value} />`
+- Class binding: `class={['base', { active: this.isActive }]}`
+- Style binding: `style={{ color: this.textColor, fontSize: '14px' }}`
+- v-model: `vModel={this.value}`
+- Conditional rendering: `{condition && <Component />}` or ternary
+- List rendering: `{items.map(item => <Item key={item.id} data={item} />)}`
+
+Functional Component with JSX
+```jsx
+export default {
+  functional: true,
+  props: {
+    items: {
+      type: Array,
+      required: true
+    }
+  },
+  render(h, { props, listeners }) {
+    return (
+      <ul class="item-list">
+        {props.items.map(item => (
+          <li
+            key={item.id}
+            onClick={() => listeners.select && listeners.select(item)}
+            class={{ selected: item.selected }}
+          >
+            {item.name}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+}
+```
+
+Slots in JSX
+```jsx
+export default {
+  name: 'Card',
+  render(h) {
+    return (
+      <div class="card">
+        <div class="card-header">
+          {this.$slots.header}
+        </div>
+        <div class="card-body">
+          {this.$slots.default}
+        </div>
+        <div class="card-footer">
+          {this.$slots.footer}
+        </div>
+      </div>
+    )
+  }
+}
+
+// Scoped slots
+export default {
+  name: 'DataList',
+  props: ['items'],
+  render(h) {
+    return (
+      <div class="data-list">
+        {this.items.map(item => (
+          <div key={item.id}>
+            {this.$scopedSlots.item({
+              item,
+              index: this.items.indexOf(item)
+            })}
+          </div>
+        ))}
+      </div>
+    )
+  }
+}
+
+// Usage
+<DataList items={items}>
+  <template slot-scope="{ item, index }">
+    <span>{index}: {item.name}</span>
+  </template>
+</DataList>
+```
+
+Custom Directives in JSX
+```jsx
+export default {
+  directives: {
+    focus: {
+      inserted(el) {
+        el.focus()
+      }
+    }
+  },
+  render(h) {
+    return (
+      <input
+        vFocus
+        vModel={this.searchQuery}
+        placeholder="Search..."
+      />
+    )
+  }
+}
+```
+
+Complex Component Example
+```jsx
+export default {
+  name: 'TodoList',
+  props: {
+    initialTodos: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data() {
+    return {
+      todos: [...this.initialTodos],
+      newTodo: '',
+      filter: 'all'
+    }
+  },
+  computed: {
+    filteredTodos() {
+      switch (this.filter) {
+        case 'active':
+          return this.todos.filter(t => !t.completed)
+        case 'completed':
+          return this.todos.filter(t => t.completed)
+        default:
+          return this.todos
+      }
+    },
+    activeCount() {
+      return this.todos.filter(t => !t.completed).length
+    }
+  },
+  methods: {
+    addTodo() {
+      if (this.newTodo.trim()) {
+        this.todos.push({
+          id: Date.now(),
+          text: this.newTodo,
+          completed: false
+        })
+        this.newTodo = ''
+      }
+    },
+    toggleTodo(id) {
+      const todo = this.todos.find(t => t.id === id)
+      if (todo) {
+        todo.completed = !todo.completed
+      }
+    },
+    removeTodo(id) {
+      this.todos = this.todos.filter(t => t.id !== id)
+    }
+  },
+  render(h) {
+    return (
+      <div class="todo-app">
+        <div class="todo-header">
+          <input
+            vModel={this.newTodo}
+            onKeyup={(e) => e.key === 'Enter' && this.addTodo()}
+            placeholder="What needs to be done?"
+            class="new-todo"
+          />
+          <button onClick={this.addTodo}>Add</button>
+        </div>
+
+        <ul class="todo-list">
+          {this.filteredTodos.map(todo => (
+            <li
+              key={todo.id}
+              class={{ completed: todo.completed }}
+            >
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => this.toggleTodo(todo.id)}
+              />
+              <span class="todo-text">{todo.text}</span>
+              <button
+                onClick={() => this.removeTodo(todo.id)}
+                class="delete-btn"
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div class="todo-footer">
+          <span>{this.activeCount} items left</span>
+          <div class="filters">
+            {['all', 'active', 'completed'].map(filter => (
+              <button
+                key={filter}
+                onClick={() => this.filter = filter}
+                class={{ active: this.filter === filter }}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+```
+
+Mixins with JSX
+```jsx
+// mixins/formValidation.js
+export default {
+  data() {
+    return {
+      errors: {}
+    }
+  },
+  methods: {
+    validateField(field, rules) {
+      // Validation logic
+    },
+    hasError(field) {
+      return !!this.errors[field]
+    },
+    getError(field) {
+      return this.errors[field]
+    }
+  }
+}
+
+// Using mixin
+import formValidation from './mixins/formValidation'
+
+export default {
+  mixins: [formValidation],
+  data() {
+    return {
+      email: '',
+      password: ''
+    }
+  },
+  render(h) {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <div class="field">
+          <input
+            vModel={this.email}
+            type="email"
+            class={{ error: this.hasError('email') }}
+          />
+          {this.hasError('email') && (
+            <span class="error-message">{this.getError('email')}</span>
+          )}
+        </div>
+      </form>
+    )
+  }
+}
+```
+
+Lifecycle Hooks with JSX
+```jsx
+export default {
+  name: 'DataFetcher',
+  data() {
+    return {
+      data: null,
+      loading: false,
+      error: null
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  beforeDestroy() {
+    // Cleanup
+    if (this.timer) {
+      clearInterval(this.timer)
+    }
+  },
+  methods: {
+    async fetchData() {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await fetch('/api/data')
+        this.data = await response.json()
+      } catch (error) {
+        this.error = error.message
+      } finally {
+        this.loading = false
+      }
+    }
+  },
+  render(h) {
+    return (
+      <div class="data-fetcher">
+        {this.loading && <div class="loading">Loading...</div>}
+        {this.error && <div class="error">{this.error}</div>}
+        {this.data && (
+          <div class="data">
+            <pre>{JSON.stringify(this.data, null, 2)}</pre>
+          </div>
+        )}
+        <button onClick={this.fetchData}>Refresh</button>
+      </div>
+    )
+  }
+}
+```
+
+TypeScript with Vue 2 JSX
+```tsx
+import Vue, { PropType } from 'vue'
+
+interface User {
+  id: string
+  name: string
+  email: string
+}
+
+export default Vue.extend({
+  name: 'UserList',
+  props: {
+    users: {
+      type: Array as PropType<User[]>,
+      required: true
+    }
+  },
+  data() {
+    return {
+      selectedUserId: null as string | null
+    }
+  },
+  computed: {
+    selectedUser(): User | undefined {
+      return this.users.find(u => u.id === this.selectedUserId)
+    }
+  },
+  methods: {
+    selectUser(id: string): void {
+      this.selectedUserId = id
+      this.$emit('user-selected', id)
+    }
+  },
+  render(h) {
+    return (
+      <div class="user-list">
+        {this.users.map((user: User) => (
+          <div
+            key={user.id}
+            onClick={() => this.selectUser(user.id)}
+            class={{
+              'user-item': true,
+              'selected': user.id === this.selectedUserId
+            }}
+          >
+            <span>{user.name}</span>
+            <span>{user.email}</span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+})
+```
+
+Best Practices
+- Use JSX for complex conditional rendering and dynamic content
+- Keep render functions pure and side-effect free
+- Extract complex logic into computed properties and methods
+- Use proper key attributes for list rendering
+- Implement proper prop validation
+- Follow Vue 2 style guide and naming conventions
+- Use TypeScript for better type safety
+- Test components with Vue Test Utils
+
+Performance Optimization
+- Use functional components for simple presentational components
+- Implement proper key attributes for v-for
+- Use Object.freeze() for large static data
+- Avoid deep watchers when possible
+- Use event delegation for large lists
+
+Testing
+- Use Vue Test Utils (@vue/test-utils) for component testing
+- Test render output and user interactions
+- Mock API calls and external dependencies
+- Test edge cases and error scenarios
+
+Dependencies
+- Vue 2.6.x or 2.7.x
+- @vue/babel-preset-jsx (for JSX support)
+- TypeScript (optional but recommended)
+- Vue Test Utils (for testing)
+
+Refer to Vue 2 documentation and JSX guide for detailed guidance.
+

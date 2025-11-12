@@ -5,23 +5,29 @@
 ### 🎉 首次发布
 
 #### 核心功能
-- ✨ 支持 24 种精选技术栈规则
+- ✨ 支持 26 种精选技术栈规则
 - 🎯 两级选择系统（类别 → 规则）
 - 📁 子文件夹分类管理
 - 🔄 智能规则管理（覆盖/合并/取消）
+- ⭐ **Vue 生态特别完善**（5种规则，公司主力技术栈）
 
 #### 规则分类
 
-**现已支持 24 种精选规则**，涵盖 7 大核心类别：
+**现已支持 26 种精选规则**，涵盖 7 大核心类别：
 
-- 🎨 **Frontend Frameworks** (7 种)
-  - Vue 2 Options API（自定义创建，1000+ 行）
-  - Vue 3 Composition API
-  - Vue + Nuxt.js
-  - React + Redux + TypeScript
-  - React + Next.js（自定义创建）
-  - Angular + TypeScript
-  - SvelteKit + TypeScript
+- 🎨 **Frontend Frameworks** (9 种)
+  - **Vue 生态**（5 种，公司主力 ⭐）
+    - Vue 2 Options API（自定义创建，1000+ 行）
+    - Vue 2 + JSX（自定义创建）
+    - Vue 3 Composition API
+    - Vue 3 + JSX（自定义创建）
+    - Vue 3 + Nuxt.js
+  - **React 生态**（2 种）
+    - React + Redux + TypeScript
+    - React + Next.js（自定义创建）
+  - **其他框架**（2 种）
+    - Angular + TypeScript
+    - SvelteKit + TypeScript
 
 - 🚀 **Backend & Full-Stack** (6 种)
   - Go Backend Scalability

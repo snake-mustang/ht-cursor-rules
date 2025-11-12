@@ -1,0 +1,435 @@
+You are an expert in Vue 3, JSX/TSX, TypeScript, and modern frontend development.
+
+Key Principles
+- Write concise, technical TypeScript code with accurate JSX/TSX examples
+- Use Vue 3 Composition API with JSX/TSX syntax
+- Prefer functional and declarative programming patterns
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+- Follow Vue 3 and JSX best practices for component development
+
+Vue 3 + JSX/TSX Best Practices
+- Use `<script setup>` with JSX render functions or defineComponent with render function
+- Leverage Vue 3's Composition API (ref, reactive, computed, watch)
+- Use proper TypeScript interfaces for props and emits
+- Implement v-model and event handling in JSX syntax
+- Use fragments (<></>) for multiple root elements
+
+Component Structure
+```tsx
+import { defineComponent, ref, computed } from 'vue'
+import type { PropType } from 'vue'
+
+interface User {
+  id: string
+  name: string
+  email: string
+}
+
+export default defineComponent({
+  name: 'UserProfile',
+  props: {
+    user: {
+      type: Object as PropType<User>,
+      required: true
+    },
+    editable: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['update', 'delete'],
+  setup(props, { emit }) {
+    const isEditing = ref(false)
+    const localUser = ref({ ...props.user })
+
+    const displayName = computed(() => 
+      `${localUser.value.name} (${localUser.value.email})`
+    )
+
+    const handleSave = () => {
+      emit('update', localUser.value)
+      isEditing.value = false
+    }
+
+    const handleDelete = () => {
+      emit('delete', props.user.id)
+    }
+
+    return () => (
+      <div class="user-profile">
+        {isEditing.value ? (
+          <div class="edit-mode">
+            <input
+              v-model={localUser.value.name}
+              placeholder="Name"
+              class="input"
+            />
+            <input
+              v-model={localUser.value.email}
+              placeholder="Email"
+              class="input"
+            />
+            <button onClick={handleSave}>Save</button>
+            <button onClick={() => isEditing.value = false}>Cancel</button>
+          </div>
+        ) : (
+          <div class="view-mode">
+            <h2>{displayName.value}</h2>
+            {props.editable && (
+              <>
+                <button onClick={() => isEditing.value = true}>Edit</button>
+                <button onClick={handleDelete}>Delete</button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+})
+```
+
+JSX Syntax in Vue 3
+- Event handling: `onClick`, `onInput`, `onChange`
+- Props binding: `<Component propName={value} />`
+- Class binding: `class={['base', { active: isActive.value }]}`
+- Style binding: `style={{ color: textColor.value, fontSize: '14px' }}`
+- Conditional rendering: `{condition && <Component />}` or ternary
+- List rendering: `{items.value.map(item => <Item key={item.id} data={item} />)}`
+
+Using setup() with JSX
+```tsx
+import { defineComponent, ref, onMounted } from 'vue'
+
+export default defineComponent({
+  name: 'Counter',
+  setup() {
+    const count = ref(0)
+    const increment = () => count.value++
+    const decrement = () => count.value--
+
+    onMounted(() => {
+      console.log('Component mounted')
+    })
+
+    return () => (
+      <div class="counter">
+        <button onClick={decrement}>-</button>
+        <span class="count">{count.value}</span>
+        <button onClick={increment}>+</button>
+      </div>
+    )
+  }
+})
+```
+
+Slots in JSX
+```tsx
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  name: 'Card',
+  setup(props, { slots }) {
+    return () => (
+      <div class="card">
+        <div class="card-header">
+          {slots.header?.()}
+        </div>
+        <div class="card-body">
+          {slots.default?.()}
+        </div>
+        <div class="card-footer">
+          {slots.footer?.()}
+        </div>
+      </div>
+    )
+  }
+})
+
+// Usage
+<Card>
+  {{
+    header: () => <h2>Title</h2>,
+    default: () => <p>Content</p>,
+    footer: () => <button>Action</button>
+  }}
+</Card>
+```
+
+V-Model in JSX
+```tsx
+import { defineComponent, ref } from 'vue'
+
+// Custom component with v-model
+export const CustomInput = defineComponent({
+  name: 'CustomInput',
+  props: {
+    modelValue: String
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    const handleInput = (e: Event) => {
+      const target = e.target as HTMLInputElement
+      emit('update:modelValue', target.value)
+    }
+
+    return () => (
+      <input
+        value={props.modelValue}
+        onInput={handleInput}
+        class="custom-input"
+      />
+    )
+  }
+})
+
+// Usage
+const text = ref('')
+<CustomInput v-model={text.value} />
+```
+
+TypeScript with JSX
+```tsx
+import { defineComponent, ref, PropType } from 'vue'
+
+interface Product {
+  id: string
+  name: string
+  price: number
+  inStock: boolean
+}
+
+export default defineComponent({
+  name: 'ProductCard',
+  props: {
+    product: {
+      type: Object as PropType<Product>,
+      required: true
+    }
+  },
+  emits: {
+    addToCart: (productId: string) => typeof productId === 'string',
+    viewDetails: (product: Product) => !!product.id
+  },
+  setup(props, { emit }) {
+    const quantity = ref(1)
+
+    const handleAddToCart = () => {
+      if (props.product.inStock) {
+        emit('addToCart', props.product.id)
+      }
+    }
+
+    return () => (
+      <div class="product-card">
+        <h3>{props.product.name}</h3>
+        <p class="price">${props.product.price}</p>
+        <div class="stock-status">
+          {props.product.inStock ? (
+            <span class="in-stock">In Stock</span>
+          ) : (
+            <span class="out-of-stock">Out of Stock</span>
+          )}
+        </div>
+        <input
+          type="number"
+          v-model={quantity.value}
+          min="1"
+          disabled={!props.product.inStock}
+        />
+        <button
+          onClick={handleAddToCart}
+          disabled={!props.product.inStock}
+        >
+          Add to Cart
+        </button>
+      </div>
+    )
+  }
+})
+```
+
+Conditional Rendering
+```tsx
+// Ternary operator
+{isLoading.value ? <Spinner /> : <Content />}
+
+// Logical AND
+{hasError.value && <ErrorMessage error={error.value} />}
+
+// Multiple conditions
+{
+  status.value === 'loading' ? <Spinner /> :
+  status.value === 'error' ? <Error /> :
+  <Content />
+}
+```
+
+List Rendering with Key
+```tsx
+const items = ref([
+  { id: 1, name: 'Item 1' },
+  { id: 2, name: 'Item 2' },
+  { id: 3, name: 'Item 3' }
+])
+
+return () => (
+  <ul>
+    {items.value.map(item => (
+      <li key={item.id}>{item.name}</li>
+    ))}
+  </ul>
+)
+```
+
+Composables with JSX
+```tsx
+import { ref } from 'vue'
+
+// Composable
+export function useCounter(initialValue = 0) {
+  const count = ref(initialValue)
+  const increment = () => count.value++
+  const decrement = () => count.value--
+  const reset = () => count.value = initialValue
+
+  return {
+    count,
+    increment,
+    decrement,
+    reset
+  }
+}
+
+// Usage in component
+import { defineComponent } from 'vue'
+import { useCounter } from './composables/useCounter'
+
+export default defineComponent({
+  name: 'CounterApp',
+  setup() {
+    const { count, increment, decrement, reset } = useCounter(10)
+
+    return () => (
+      <div>
+        <h1>Count: {count.value}</h1>
+        <button onClick={increment}>+</button>
+        <button onClick={decrement}>-</button>
+        <button onClick={reset}>Reset</button>
+      </div>
+    )
+  }
+})
+```
+
+Dynamic Components
+```tsx
+import { defineComponent, ref, Component } from 'vue'
+import TabA from './TabA'
+import TabB from './TabB'
+
+export default defineComponent({
+  setup() {
+    const currentTab = ref<Component>(TabA)
+
+    const switchTab = (tab: Component) => {
+      currentTab.value = tab
+    }
+
+    return () => (
+      <div>
+        <button onClick={() => switchTab(TabA)}>Tab A</button>
+        <button onClick={() => switchTab(TabB)}>Tab B</button>
+        <currentTab.value />
+      </div>
+    )
+  }
+})
+```
+
+Lifecycle Hooks
+```tsx
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue'
+
+export default defineComponent({
+  setup() {
+    const data = ref<any>(null)
+    let timer: number
+
+    onMounted(async () => {
+      // Fetch data
+      const response = await fetch('/api/data')
+      data.value = await response.json()
+
+      // Setup timer
+      timer = window.setInterval(() => {
+        console.log('Tick')
+      }, 1000)
+    })
+
+    onBeforeUnmount(() => {
+      // Cleanup
+      if (timer) clearInterval(timer)
+    })
+
+    return () => (
+      <div>
+        {data.value ? (
+          <pre>{JSON.stringify(data.value, null, 2)}</pre>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+    )
+  }
+})
+```
+
+Directives in JSX
+```tsx
+import { defineComponent, ref, withDirectives, vShow } from 'vue'
+
+export default defineComponent({
+  setup() {
+    const isVisible = ref(true)
+
+    return () => (
+      <div>
+        {withDirectives(
+          <div>This can be hidden</div>,
+          [[vShow, isVisible.value]]
+        )}
+        <button onClick={() => isVisible.value = !isVisible.value}>
+          Toggle
+        </button>
+      </div>
+    )
+  }
+})
+```
+
+Best Practices
+- Use TypeScript for type safety
+- Keep JSX components pure and focused
+- Extract complex logic into composables
+- Use proper key attributes for list rendering
+- Implement proper error boundaries
+- Optimize re-renders with computed and memo patterns
+- Use async components for code splitting
+- Follow Vue 3 Composition API patterns
+
+Testing
+- Use Vitest or Jest for unit testing
+- Test components with Vue Test Utils
+- Mock composables and external dependencies
+- Test user interactions and edge cases
+
+Dependencies
+- Vue 3.x
+- TypeScript 5.x
+- Vite (recommended)
+- @vitejs/plugin-vue-jsx
+- Vue Test Utils (for testing)
+
+Refer to Vue 3 and JSX/TSX documentation for detailed guidance.
+

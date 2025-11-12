@@ -1,10 +1,18 @@
 # HT Cursor Rules
 
-🚀 一键添加 Cursor AI 编程规则的 VSCode/Cursor 扩展，24 种精选技术栈规则！
+🚀 一键添加 Cursor AI 编程规则的 VSCode/Cursor 扩展，26 种精选技术栈规则！
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/HUANGTONG.ht-cursor-rules)](https://marketplace.visualstudio.com/items?itemName=HUANGTONG.ht-cursor-rules)
+
+---
+
+## 💡 需要其他技术栈规则？
+
+**如果您需要的技术栈规则不在列表中，请[提交 Issue](https://github.com/snake-mustang/ht-cursor-rules/issues/new)！**
+
+我们会尽快添加您需要的规则，帮助团队提升开发效率。所有建议都会被认真考虑并快速响应。
 
 ---
 
@@ -58,7 +66,7 @@
 
 3. **选择规则**
    - **第一步**：选择技术类别（7 大类）
-   - **第二步**：选择具体规则（23 种规则）
+   - **第二步**：选择具体规则（26 种规则）
    - **第三步**：选择添加方式（覆盖/合并/取消）
 
 4. **完成**
@@ -69,15 +77,26 @@
 
 ## 📦 规则分类
 
-### 🎨 前端框架（7 种）
+### 🎨 前端框架（9 种）
 
+#### Vue 生态（公司主力技术栈 ⭐）
 | 规则 | 说明 | 适用场景 |
 |------|------|----------|
 | **Vue 2 Options API** | Vue 2 Options API 完整指南 | Vue 2 维护项目 |
+| **Vue 2 + JSX** | Vue 2 + JSX/TSX 开发指南 | Vue 2 JSX 项目 |
 | **Vue 3 Composition API** | Vue 3 Composition API 开发指南 | Vue 3 新项目 |
-| **Vue + Nuxt.js** | Vue 3 + Nuxt 3 全栈开发 | Nuxt.js SSR 应用 |
+| **Vue 3 + JSX** | Vue 3 + JSX/TSX 开发指南 | Vue 3 JSX 项目 |
+| **Vue 3 + Nuxt.js** | Vue 3 + Nuxt 3 全栈开发 | Nuxt.js SSR 应用 |
+
+#### React 生态
+| 规则 | 说明 | 适用场景 |
+|------|------|----------|
 | **React + Redux + TypeScript** | React + Redux + TypeScript 最佳实践 | React 状态管理应用 |
 | **React + Next.js** | React + Next.js 全栈开发 | Next.js SSR/SSG 应用 |
+
+#### 其他框架
+| 规则 | 说明 | 适用场景 |
+|------|------|----------|
 | **Angular + TypeScript** | Angular + TypeScript 开发指南 | Angular 企业级应用 |
 | **SvelteKit + TypeScript** | SvelteKit + TypeScript 开发 | Svelte 现代应用 |
 
@@ -145,8 +164,9 @@
 - 🧪 Testing Frameworks
 - 📂 Other
 
-**第二级**：24 种精选规则
+**第二级**：26 种精选规则
 - 涵盖主流技术栈
+- **Vue生态特别完善**（5种规则，公司主力技术栈）
 - 包含完整开发规范
 - 提供代码示例和最佳实践
 
@@ -345,7 +365,8 @@ Python 生态：
 
 ### ✅ 精选规则
 
-- 24 种精选规则，覆盖主流技术栈
+- 26 种精选规则，覆盖主流技术栈
+- **Vue 生态特别完善**：5种规则（Vue2/Vue3 + JSX + Nuxt）
 - 规则质量高，内容详尽（1000-2000+ 行）
 - 包含完整代码示例和最佳实践
 
