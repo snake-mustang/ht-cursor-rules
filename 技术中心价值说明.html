@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HT Cursor Rules - 技术中心价值说明</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1e293b;
+            --light-bg: #f8fafc;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .stat-card .label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .comparison-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .comparison-table tbody tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .comparison-table tbody tr:hover {
+            background: #e0e7ff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow);
+            transform: translateY(-4px);
+        }
+
+        .feature-card .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 0.9375rem;
+        }
+
+        .rules-category {
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .rules-category h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rules-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .rule-item {
+            background: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+            font-size: 0.9375rem;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        code {
+            background: var(--light-bg);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: var(--danger-color);
+        }
+
+        .emoji {
+            font-style: normal;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .stats-grid,
+            .feature-grid,
+            .rules-list {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 HT Cursor Rules</h1>
+            <p class="subtitle">技术中心价值说明 v1.0.5</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- 概述 -->
+            <div class="section">
+                <h2 class="section-title"><span class="emoji">📌</span> 概述</h2>
+                <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-light);">
+                    <strong style="color: var(--text-dark);">HT Cursor Rules</strong> 是一款专为 Cursor AI 编辑器设计的 VSCode 扩展，
+                    旨在通过预设的编程规则提升开发效率和代码质量。插件集成了 <strong style="color: var(--primary-color);">63 种精选规则模板</strong>，
+                    覆盖前端、后端、移动开发、游戏研发、测试等多个领域，分为 <strong style="color: var(--secondary-color);">12 大技术类别</strong>，
+                    来自 GitHub <strong>awesome-cursorrules</strong> (35k+ ⭐) + 定制通用规则。
+                </p>
+            </div>
+
+            <!-- 核心数据 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">63</div>
+                    <div class="label">精选规则模板</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">12</div>
+                    <div class="label">技术类别</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">35k+</div>
+                    <div class="label">GitHub Stars</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">10秒</div>
+                    <div class="label">快速配置</div>
+                </div>
+            </div>
+
+            <!-- 为什么要用这个插件 -->
+            <div class="section">
+                <h2 class="section-title"><span class="emoji">💡</span> 为什么要用这个插件？</h2>
+                
+                <div class="highlight-box">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">核心价值：让专业的人做专业的事</h3>
+                    <p style="font-size: 1.125rem;">
+                        把时间花在业务开发上，而不是编写和维护配置文件上。
+                        使用经过 35k+ GitHub 社区验证的专业规则，10 秒完成配置，立即提升开发效率。
+                    </p>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem; font-size: 1.5rem; color: var(--text-dark);">
+                    <span class="emoji">🤔</span> 三种方案对比
+                </h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>对比维度</th>
+                            <th>自己搜文档</th>
+                            <th>手动配置 Rules</th>
+                            <th>HT Cursor Rules</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>时间成本</strong></td>
+                            <td><span class="badge badge-danger">5-8 小时</span></td>
+                            <td><span class="badge badge-warning">3-5 小时</span></td>
+                            <td><span class="badge badge-success">10 秒</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>质量保证</strong></td>
+                            <td>❌ 碎片化，需自己整合</td>
+                            <td>⚠️ 依赖个人经验</td>
+                            <td>✅ 社区验证 (35k+ ⭐)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>完整程度</strong></td>
+                            <td>❌ 不完整，缺少实践</td>
+                            <td>⚠️ 可能遗漏关键点</td>
+                            <td>✅ 1000-2000+ 行专业规范</td>
+                        </tr>
+                        <tr>
+                            <td><strong>团队协同</strong></td>
+                            <td>❌ 各自理解不同</td>
+                            <td>⚠️ 需要共享和同步</td>
+                            <td>✅ 统一标准，一键安装</td>
+                        </tr>
+                        <tr>
+                            <td><strong>持续更新</strong></td>
+                            <td>❌ 需要持续关注</td>
+                            <td>❌ 需要手动维护</td>
+                            <td>✅ 自动更新</td>
+                        </tr>
+                        <tr>
+                            <td><strong>学习成本</strong></td>
+                            <td><span class="badge badge-danger">很高</span></td>
+                            <td><span class="badge badge-warning">中等</span></td>
+                            <td><span class="badge badge-success">极低</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 核心优势 -->
+            <div class="section">
+                <h2 class="section-title"><span class="emoji">✨</span> 核心优势</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">⚡</div>
+                        <h3>极速配置</h3>
+                        <p>10 秒完成安装和配置，立即开始使用。相比传统方式节省 99% 时间（3-8 小时 → 10 秒）</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🏆</div>
+                        <h3>社区验证</h3>
+                        <p>所有规则来自 GitHub awesome-cursorrules (35k+ ⭐)，经过大量开发者验证和优化</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📚</div>
+                        <h3>规范完整</h3>
+                        <p>每个规则 1000-2000+ 行，包含完整的编码规范、最佳实践、代码示例和注意事项</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">👥</div>
+                        <h3>团队协作</h3>
+                        <p>统一的 AI 辅助标准，团队成员一键安装，确保代码风格和质量一致</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🔄</div>
+                        <h3>持续更新</h3>
+                        <p>插件自动更新，跟随社区最新实践，无需手动维护配置文件</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🎯</div>
+                        <h3>定制规则</h3>
+                        <p>提供前端/后端通用规则（推荐），中文回答 + 6 步回答模式 + 完整的代码审查清单</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 规则分类 -->
+            <div class="section">
+                <h2 class="section-title"><span class="emoji">📦</span> 规则分类（63 种）</h2>
+
+                <div class="rules-category">
+                    <h3><span class="emoji">🎨</span> Frontend Frameworks (18种) ⭐</h3>
+                    <div class="rules-list">
+                        <div class="rule-item">前端通用规则（推荐）⭐</div>
+                        <div class="rule-item">Angular + TypeScript</div>
+                        <div class="rule-item">Astro + TypeScript</div>
+                        <div class="rule-item">Next.js 15 + React 19 + Vercel AI</div>
+                        <div class="rule-item">Next.js 14 + Tailwind + SEO</div>
+                        <div class="rule-item">Next.js + React + Tailwind</div>
+                        <div class="rule-item">Next.js + React + TypeScript</div>
+                        <div class="rule-item">Next.js + TypeScript</div>
+                        <div class="rule-item">Qwik + TypeScript + Vite</div>
+                        <div class="rule-item">React Components</div>
+                        <div class="rule-item">React + TypeScript + Next.js + Node.js</div>
+                        <div class="rule-item">Solid.js Basic</div>
+                        <div class="rule-item">Solid.js + TypeScript</div>
+                        <div class="rule-item">Svelte 5 vs Svelte 4</div>
+                        <div class="rule-item">SvelteKit + RESTful API + Tailwind</div>
+                        <div class="rule-item">SvelteKit + Tailwind + TypeScript</div>
+                        <div class="rule-item">Vue 3 Composition API</div>
+                        <div class="rule-item">Vue 3 + Nuxt 3 + TypeScript</div>
+                    </div>
+                </div>
+
+                <div class="rules-category">
+                    <h3><span class="emoji">🚀</span> Backend & Full-Stack (14种) ⭐</h3>
+                    <div class="rules-list">
+                        <div class="rule-item">后端通用规则（推荐）⭐</div>
+                        <div class="rule-item">Convex Best Practices</div>
+                        <div class="rule-item">Deno Integration</div>
+                        <div class="rule-item">Elixir + Phoenix + Docker</div>
+                        <div class="rule-item">Go Backend Scalability</div>
+                        <div class="rule-item">Go Basic</div>
+                        <div class="rule-item">HTMX Basic</div>
+                        <div class="rule-item">HTMX + Flask</div>
+                        <div class="rule-item">Java + SpringBoot + JPA</div>
+                        <div class="rule-item">Laravel + PHP 8.3</div>
+                        <div class="rule-item">Node.js + MongoDB</div>
+                        <div class="rule-item">Python FastAPI</div>
+                        <div class="rule-item">Python Django</div>
+                        <div class="rule-item">TypeScript + NestJS</div>
+                    </div>
+                </div>
+
+                <div class="rules-category">
+                    <h3><span class="emoji">📱</span> Mobile Development (5种)</h3>
+                    <div class="rules-list">
+                        <div class="rule-item">React Native + Expo</div>
+                        <div class="rule-item">SwiftUI Guidelines</div>
+                        <div class="rule-item">Android Jetpack Compose</div>
+                        <div class="rule-item">Flutter Expert</div>
+                        <div class="rule-item">UIKit Guidelines</div>
+                    </div>
+                </div>
+
+                <div class="rules-category">
+                    <h3><span class="emoji">🎮</span> Game Development (4种)</h3>
+                    <div class="rules-list">
+                        <div class="rule-item">Unity (C#)</div>
+                        <div class="rule-item">Unreal Engine (C++)</div>
+                        <div class="rule-item">Cocos Creator (TypeScript)</div>
+                        <div class="rule-item">LayaBox (TypeScript)</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                    <div class="rules-category">
+                        <h3><span class="emoji">🎨</span> CSS & Styling (3种)</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">Tailwind + Next.js</div>
+                            <div class="rule-item">Tailwind + React + Firebase</div>
+                            <div class="rule-item">HTML + Tailwind + JavaScript</div>
+                        </div>
+                    </div>
+
+                    <div class="rules-category">
+                        <h3><span class="emoji">🔄</span> State Management (3种)</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">React + Redux + TypeScript</div>
+                            <div class="rule-item">React + MobX</div>
+                            <div class="rule-item">React + React Query</div>
+                        </div>
+                    </div>
+
+                    <div class="rules-category">
+                        <h3><span class="emoji">🗄️</span> Database & API (2种)</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">GraphQL + Apollo Client</div>
+                            <div class="rule-item">TypeScript + Axios</div>
+                        </div>
+                    </div>
+
+                    <div class="rules-category">
+                        <h3><span class="emoji">🧪</span> Testing (4种)</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">Cypress E2E Testing</div>
+                            <div class="rule-item">Jest Unit Testing</div>
+                            <div class="rule-item">Playwright E2E Testing</div>
+                            <div class="rule-item">Vitest Unit Testing</div>
+                        </div>
+                    </div>
+
+                    <div class="rules-category">
+                        <h3><span class="emoji">🌐</span> Hosting (1种)</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">Netlify</div>
+                        </div>
+                    </div>
+
+                    <div class="rules-category">
+                        <h3><span class="emoji">🔧</span> Build Tools (3种)</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">Chrome Extension (JS/TS)</div>
+                            <div class="rule-item">Git Commit Messages</div>
+                            <div class="rule-item">TypeScript Code Convention</div>
+                        </div>
+                    </div>
+
+                    <div class="rules-category">
+                        <h3><span class="emoji">💻</span> Language-Specific (4种)</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">Python Best Practices</div>
+                            <div class="rule-item">Python Developer</div>
+                            <div class="rule-item">R Best Practices</div>
+                            <div class="rule-item">C++ Programming Guidelines</div>
+                        </div>
+                    </div>
+
+                    <div class="rules-category">
+                        <h3><span class="emoji">📂</span> Other (2种)</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">Code Guidelines</div>
+                            <div class="rule-item">Optimize (DRY & SOLID)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-section">
+                <h2>🚀 立即开始使用</h2>
+                <p style="font-size: 1.125rem; margin-top: 1rem;">
+                    在 Cursor/VSCode 中搜索 <strong>HT Cursor Rules</strong> 即可安装<br>
+                    或访问 GitHub 仓库了解更多
+                </p>
+                <a href="https://github.com/snake-mustang/ht-cursor-rules" class="cta-button" target="_blank">
+                    访问 GitHub 仓库
+                </a>
+            </div>
+
+            <!-- 总结 -->
+            <div class="section">
+                <h2 class="section-title"><span class="emoji">🎯</span> 总结</h2>
+                <div style="background: var(--light-bg); padding: 2rem; border-radius: 12px; border-left: 4px solid var(--success-color);">
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-dark);">
+                        <strong>HT Cursor Rules</strong> 通过提供 <strong style="color: var(--primary-color);">63 种精选规则模板</strong>，
+                        帮助技术中心实现：
+                    </p>
+                    <ul style="margin-top: 1rem; font-size: 1.0625rem; line-height: 1.8;">
+                        <li><strong>效率提升 99%</strong>：10 秒完成配置 vs 3-8 小时手动整理</li>
+                        <li><strong>质量保证</strong>：使用经过 35k+ 社区验证的专业规则</li>
+                        <li><strong>团队协作</strong>：统一 AI 辅助标准，降低沟通成本</li>
+                        <li><strong>持续优化</strong>：自动更新，跟随社区最新实践</li>
+                        <li><strong>定制规则</strong>：前端/后端通用规则，中文回答 + 完整审查清单</li>
+                    </ul>
+                    <p style="margin-top: 1.5rem; font-size: 1.125rem; color: var(--success-color); font-weight: 600;">
+                        让开发者专注于业务开发，而不是配置文件维护！
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 2rem; color: white; opacity: 0.9;">
+        <p>&copy; 2025 HT Cursor Rules | Version 1.0.5</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+            GitHub: <a href="https://github.com/snake-mustang/ht-cursor-rules" style="color: white; text-decoration: underline;">
+                snake-mustang/ht-cursor-rules
+            </a>
+        </p>
+    </footer>
+</body>
+</html>
+
