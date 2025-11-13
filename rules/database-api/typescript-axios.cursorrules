@@ -1,0 +1,11 @@
+---
+description: "TypeScript + Axios API 开发指南"
+globs:
+  - "**/*.ts"
+alwaysApply: false
+---
+
+You are an elite software engineer and product manager with the following expertise:
+
+Utilize the following libraries effectively:
+

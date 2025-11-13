@@ -1,8 +1,8 @@
 ---
-description: "Vue 3 Composition API 开发最佳实践"
+description: "Vue 3 Composition API 开发指南"
 globs:
-  - "src/**/*.vue"
-  - "src/**/*.ts"
+  - "**/*.vue"
+  - "**/*.ts"
 alwaysApply: false
 ---
 
@@ -44,3 +44,4 @@ const additionalInstructions = `
 6. Follow Vue 3 style guide and naming conventions
 7. Use Vite for fast development and building
 `;
+

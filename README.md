@@ -49,10 +49,10 @@
 
 ## 💡 使用场景
 
-**🌐 Web 全栈开发**：React/Vue + FastAPI/Django + Jest/Vitest  
-**📱 移动应用开发**：SwiftUI/Objective-C (iOS) + Jetpack Compose (Android) + React Native/Flutter (跨平台)  
-**🎮 游戏开发**：Unity (C#) + Unreal (C++) + Cocos/LayaBox (H5游戏)  
-**🏢 企业级应用**：SpringBoot/Spring Cloud (Java) + FastAPI/Django (Python) + Go + PHP 微服务
+**🌐 Web 全栈开发**：React/Vue/Angular/Svelte + Next.js/Nuxt + FastAPI/Django/NestJS  
+**📱 移动应用开发**：SwiftUI/UIKit (iOS) + Jetpack Compose (Android) + React Native/Flutter (跨平台)  
+**🎮 游戏开发**：Unity (C#) + Unreal (C++) + Cocos Creator/LayaBox (TypeScript)  
+**🏢 企业级应用**：SpringBoot (Java) + Go + Elixir/Phoenix + Laravel (PHP) + NestJS (TypeScript)
 
 ---
 
@@ -79,69 +79,166 @@
 
 ---
 
-## 📦 规则分类
+## 📦 规则分类（63 种）
 
-### 🎨 前端框架（9 种）
+<details>
+<summary><strong>🎨 前端框架 (18种)</strong> - Angular, React, Vue, Svelte, Solid.js, Qwik, Astro</summary>
 
-#### Vue 生态（公司主力技术栈 ⭐）
-| 规则 | 说明 | 适用场景 |
-|------|------|----------|
-| **Vue 2 Options API** | Vue 2 Options API 完整指南 | Vue 2 维护项目 |
-| **Vue 2 + JSX** | Vue 2 + JSX/TSX 开发指南 | Vue 2 JSX 项目 |
-| **Vue 3 Composition API** | Vue 3 Composition API 开发指南 | Vue 3 新项目 |
-| **Vue 3 + JSX** | Vue 3 + JSX/TSX 开发指南 | Vue 3 JSX 项目 |
-| **Vue 3 + Nuxt.js** | Vue 3 + Nuxt 3 全栈开发 | Nuxt.js SSR 应用 |
+| 规则 | 说明 |
+|------|------|
+| **前端通用规则（推荐）⭐** | 适用于所有前端项目的通用开发规范 |
+| **Angular + TypeScript** | Angular TypeScript 开发最佳实践 |
+| **Astro + TypeScript** | Astro TypeScript 开发最佳实践 |
+| **Next.js 15 + React 19 + Vercel AI** | 最新版Next.js + React + Vercel AI SDK |
+| **Next.js 14 + Tailwind + SEO** | Next.js 14 + Tailwind + SEO 优化 |
+| **Next.js + React + Tailwind** | Next.js + React + Tailwind 开发指南 |
+| **Next.js + React + TypeScript** | Next.js + React + TypeScript 开发指南 |
+| **Next.js + TypeScript** | Next.js TypeScript 开发最佳实践 |
+| **Qwik + TypeScript + Vite** | Qwik + TypeScript + Vite 开发指南 |
+| **React Components** | React 组件开发最佳实践 |
+| **React + TypeScript + Next.js + Node.js** | 全栈开发指南 |
+| **Solid.js Basic** | Solid.js 基础开发指南 |
+| **Solid.js + TypeScript** | Solid.js TypeScript 开发指南 |
+| **Svelte 5 vs Svelte 4** | Svelte 5 vs 4 对比指南 |
+| **SvelteKit + RESTful API + Tailwind** | SvelteKit 完整开发指南 |
+| **SvelteKit + Tailwind + TypeScript** | SvelteKit 开发最佳实践 |
+| **Vue 3 Composition API** | Vue 3 Composition API 开发指南 |
+| **Vue 3 + Nuxt 3 + TypeScript** | Vue 3 + Nuxt 3 全栈开发 |
 
-#### React 生态
-| 规则 | 说明 | 适用场景 |
-|------|------|----------|
-| **React + Redux + TypeScript** | React + Redux + TypeScript 最佳实践 | React 状态管理应用 |
-| **React + Next.js** | React + Next.js 全栈开发 | Next.js SSR/SSG 应用 |
+</details>
 
-#### 其他框架
-| 规则 | 说明 | 适用场景 |
-|------|------|----------|
-| **Angular + TypeScript** | Angular + TypeScript 开发指南 | Angular 企业级应用 |
-| **SvelteKit + TypeScript** | SvelteKit + TypeScript 开发 | Svelte 现代应用 |
+<details>
+<summary><strong>🚀 后端框架 (14种)</strong> - Go, Java, Python, PHP, Elixir, Node.js, HTMX</summary>
 
-### 🚀 后端框架（6 种）
+| 规则 | 说明 |
+|------|------|
+| **后端通用规则（推荐）⭐** | 适用于所有后端项目的通用开发规范 |
+| **Convex Best Practices** | Convex 后端开发最佳实践 |
+| **Deno Integration** | Deno 集成开发指南 |
+| **Elixir + Phoenix + Docker** | Elixir + Phoenix + Docker 开发 |
+| **Go Backend Scalability** | Go 后端可扩展性开发 |
+| **Go Basic** | Go 基础开发指南 |
+| **HTMX Basic** | HTMX 基础开发指南 |
+| **HTMX + Flask** | HTMX + Flask 开发指南 |
+| **Java + SpringBoot + JPA** | SpringBoot + JPA 开发 |
+| **Laravel + PHP 8.3** | Laravel + PHP 8.3 开发 |
+| **Node.js + MongoDB** | Node.js + MongoDB 开发 |
+| **Python FastAPI** | FastAPI 开发最佳实践 |
+| **Python Django** | Django 开发最佳实践 |
+| **TypeScript + NestJS** | NestJS 开发最佳实践 |
 
-| 规则 | 说明 | 适用场景 |
-|------|------|----------|
-| **Go Backend** | Go 后端可扩展性开发 | Go 微服务架构 |
-| **Java SpringBoot** | SpringBoot + JPA 开发 | Java 企业应用 |
-| **Spring Cloud + Java** | Spring Cloud 微服务架构 | Java 分布式系统 |
-| **PHP Best Practices** | PHP 开发最佳实践 | PHP Web 应用 |
-| **Python FastAPI** | FastAPI 开发最佳实践 | Python 高性能 API |
-| **Python Django** | Django 开发最佳实践 | Python 全栈应用 |
+</details>
 
-### 📱 移动开发（5 种）
+<details>
+<summary><strong>📱 移动开发 (5种)</strong> - iOS, Android, Flutter, React Native</summary>
 
-| 规则 | 说明 | 适用场景 |
-|------|------|----------|
-| **React Native Expo** | React Native + Expo 开发 | 跨平台移动应用 |
-| **SwiftUI** | SwiftUI 开发规范 | iOS 现代应用 |
-| **Objective-C** | Objective-C iOS 开发 | iOS 原生应用 |
-| **Android Jetpack Compose** | Android Jetpack Compose 开发 | Android 现代应用 |
-| **Flutter Expert** | Flutter 专家级开发 | Flutter 跨平台应用 |
+| 规则 | 说明 |
+|------|------|
+| **React Native + Expo** | React Native + Expo 开发 |
+| **SwiftUI Guidelines** | SwiftUI 开发规范 |
+| **Android Jetpack Compose** | Android Jetpack Compose 开发 |
+| **Flutter Expert** | Flutter 专家级开发指南 |
+| **UIKit Guidelines** | UIKit 开发规范 |
 
-### 🧪 测试框架（4 种）
+</details>
 
-| 规则 | 说明 | 适用场景 |
-|------|------|----------|
-| **Cypress E2E** | Cypress 端到端测试 | Web 应用 E2E 测试 |
-| **Playwright E2E** | Playwright 端到端测试 | 跨浏览器 E2E 测试 |
-| **Jest Unit** | Jest 单元测试 | React/Node.js 单元测试 |
-| **Vitest Unit** | Vitest 测试框架 | Vite 项目单元测试 |
+<details>
+<summary><strong>🎮 游戏开发 (4种)</strong> - Unity, Unreal, Cocos, LayaBox</summary>
 
-### 🎮 游戏开发（4 种）
+| 规则 | 说明 |
+|------|------|
+| **Unity (C#)** | Unity C# 游戏开发规范 |
+| **Unreal Engine (C++)** | Unreal Engine C++ 开发规范 |
+| **Cocos Creator (TypeScript)** | Cocos Creator TypeScript 开发 |
+| **LayaBox (TypeScript)** | LayaBox H5 游戏开发 |
 
-| 规则 | 说明 | 适用场景 |
-|------|------|----------|
-| **Unity (C#)** | Unity C# 游戏开发 | Unity 3D/2D 游戏 |
-| **Unreal Engine (C++)** | Unreal Engine C++ 开发 | UE 3A 级游戏 |
-| **Cocos Creator (TypeScript)** | Cocos Creator 开发 | Cocos 2D/3D 游戏 |
-| **LayaBox (TypeScript)** | LayaBox H5 游戏开发 | H5 小游戏 |
+</details>
+
+<details>
+<summary><strong>🎨 CSS & 样式 (3种)</strong> - Tailwind CSS</summary>
+
+| 规则 | 说明 |
+|------|------|
+| **Tailwind + Next.js** | Tailwind + Next.js 样式开发 |
+| **Tailwind + React + Firebase** | Tailwind + React + Firebase 开发 |
+| **HTML + Tailwind + JavaScript** | HTML + Tailwind + JS 开发 |
+
+</details>
+
+<details>
+<summary><strong>🔄 状态管理 (3种)</strong> - Redux, MobX, React Query</summary>
+
+| 规则 | 说明 |
+|------|------|
+| **React + Redux + TypeScript** | Redux 状态管理指南 |
+| **React + MobX** | MobX 状态管理指南 |
+| **React + React Query** | React Query 数据管理 |
+
+</details>
+
+<details>
+<summary><strong>🗄️ 数据库 & API (2种)</strong> - GraphQL, Axios</summary>
+
+| 规则 | 说明 |
+|------|------|
+| **GraphQL + Apollo Client** | GraphQL + Apollo Client 开发 |
+| **TypeScript + Axios** | TypeScript + Axios API 开发 |
+
+</details>
+
+<details>
+<summary><strong>🧪 测试框架 (4种)</strong> - Cypress, Jest, Playwright, Vitest</summary>
+
+| 规则 | 说明 |
+|------|------|
+| **Cypress E2E Testing** | Cypress 端到端测试 |
+| **Jest Unit Testing** | Jest 单元测试 |
+| **Playwright E2E Testing** | Playwright 端到端测试 |
+| **Vitest Unit Testing** | Vitest 单元测试 |
+
+</details>
+
+<details>
+<summary><strong>🌐 托管部署 (1种)</strong> - Netlify</summary>
+
+| 规则 | 说明 |
+|------|------|
+| **Netlify** | Netlify 部署和配置指南 |
+
+</details>
+
+<details>
+<summary><strong>🔧 构建工具 (3种)</strong> - Chrome扩展, Git, TypeScript规范</summary>
+
+| 规则 | 说明 |
+|------|------|
+| **Chrome Extension (JS/TS)** | Chrome 扩展开发指南 |
+| **Git Commit Messages** | Git 提交消息规范 |
+| **TypeScript Code Convention** | TypeScript 代码规范 |
+
+</details>
+
+<details>
+<summary><strong>💻 编程语言 (4种)</strong> - Python, R, C++</summary>
+
+| 规则 | 说明 |
+|------|------|
+| **Python Best Practices** | Python 开发最佳实践 |
+| **Python Developer** | Python 开发者指南 |
+| **R Best Practices** | R 语言开发最佳实践 |
+| **C++ Programming Guidelines** | C++ 编程规范 |
+
+</details>
+
+<details>
+<summary><strong>📂 其他 (2种)</strong> - 通用规范</summary>
+
+| 规则 | 说明 |
+|------|------|
+| **Code Guidelines** | 代码开发规范 |
+| **Optimize (DRY & SOLID)** | DRY & SOLID 优化原则 |
+
+</details>
 
 ---
 
@@ -153,19 +250,26 @@
 选择类别 → 选择规则 → 添加完成
 ```
 
-**第一级**：6 大技术类别
-- 🎨 Frontend Frameworks
+**第一级**：12 大技术类别
+- 🎨 Frontend Frameworks & Libraries
 - 🚀 Backend & Full-Stack
-- 🎮 Game Development
 - 📱 Mobile Development
+- 🎮 Game Development
+- 🎨 CSS & Styling
+- 🔄 State Management
+- 🗄️ Database & API
 - 🧪 Testing Frameworks
+- 🌐 Hosting & Deployments
+- 🔧 Build Tools & Development
+- 💻 Language-Specific
 - 📂 Other
 
-**第二级**：28 种精选规则
-- 涵盖主流技术栈
-- **Vue生态特别完善**（5种规则，公司主力技术栈）
+**第二级**：63 种精选规则
+- 涵盖主流技术栈和最新技术
+- 来自 GitHub **awesome-cursorrules** (35k+ stars) + **定制通用规则**
 - 包含完整开发规范
 - 提供代码示例和最佳实践
+- **⭐ 特别推荐**：前端/后端通用规则（适用于所有项目）
 
 ### 📝 智能规则管理
 

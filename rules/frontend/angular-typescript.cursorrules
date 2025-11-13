@@ -1,8 +1,8 @@
 ---
-description: "Angular + TypeScript 开发指南"
+description: "Angular TypeScript 开发最佳实践"
 globs:
-  - "src/**/*.ts"
-  - "src/**/*.component.ts"
+  - "**/*.ts"
+  - "**/*.html"
 alwaysApply: false
 ---
 

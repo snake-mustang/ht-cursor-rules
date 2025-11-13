@@ -1,8 +1,8 @@
 ---
-description: "React Native + Expo 开发最佳实践"
+description: "React Native + Expo 开发指南"
 globs:
-  - "src/**/*.tsx"
-  - "src/**/*.ts"
+  - "**/*.tsx"
+  - "**/*.ts"
 alwaysApply: false
 ---
 

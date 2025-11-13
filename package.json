@@ -1,8 +1,8 @@
 {
   "name": "ht-cursor-rules",
   "displayName": "HT Cursor Rules",
-  "description": "一键安装，一键配置！为 Cursor AI 快速添加编程规则。提供前端、后端、游戏研发、原生开发、测试等 28 种精选规则模板。",
-  "version": "1.0.4",
+  "description": "一键安装，一键配置！为 Cursor AI 快速添加编程规则。提供前端、后端、游戏研发、原生开发、测试等 63 种精选规则模板（含定制通用规则），来自 GitHub awesome-cursorrules (35k+ stars)。",
+  "version": "1.0.5",
   "publisher": "HUANGTONG",
   "engines": {
     "vscode": "^1.93.0"

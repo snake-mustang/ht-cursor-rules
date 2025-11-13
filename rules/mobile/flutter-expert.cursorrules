@@ -1,7 +1,7 @@
 ---
-description: "Flutter 专家级开发指南"
+description: "Flutter 专家开发指南"
 globs:
-  - "lib/**/*.dart"
+  - "**/*.dart"
 alwaysApply: false
 ---
 
@@ -110,3 +110,4 @@ const testingTestingGuidelines = `
 6. Follow proper test naming conventions
 7. Implement proper CI/CD testing
 `;
+
