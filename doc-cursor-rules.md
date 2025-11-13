@@ -2,11 +2,11 @@
 
 ## 📌 概述
 
-**HT Cursor Rules** 是一款专为 Cursor AI 编辑器设计的 VSCode 扩展，旨在通过预设的编程规则提升开发效率和代码质量。插件集成了 **63 种精选规则模板**，覆盖前端、后端、移动开发、游戏研发、测试等多个领域，分为 **12 大技术类别**，来自 GitHub **awesome-cursorrules** (35k+ ⭐) + 定制通用规则。
+**HT Cursor Rules** 是一款专为 Cursor AI 编辑器设计的 VSCode 扩展，旨在通过预设的编程规则提升开发效率和代码质量。插件集成了 **65 种精选规则模板**，覆盖前端、后端、移动开发、游戏研发、测试等多个领域，分为 **12 大技术类别**，来自 GitHub **awesome-cursorrules** (35k+ ⭐) + 定制通用规则。
 
 ### 核心数据
 
-- **规则数量**：63 种（v1.0.5）
+- **规则数量**：65 种（v1.0.5）
 - **技术类别**：12 大类（前端、后端、移动、游戏、CSS、状态管理、数据库、测试、托管、构建工具、编程语言、其他）
 - **来源**：GitHub awesome-cursorrules (35k+ ⭐) + 定制通用规则
 - **安装方式**：一键安装，10 秒配置
@@ -315,7 +315,7 @@ Ctrl+Shift+P (Mac: Cmd+Shift+P) → 输入 "HT"
 
 ---
 
-## 📦 完整规则列表（63 种）
+## 📦 完整规则列表（65 种）
 
 ### 🎨 前端框架（18 种）⭐
 - **前端通用规则（推荐）⭐** - 适用所有前端项目的通用开发规范
@@ -360,11 +360,13 @@ Ctrl+Shift+P (Mac: Cmd+Shift+P) → 输入 "HT"
 - Flutter Expert - Flutter 专家级开发指南
 - UIKit Guidelines - UIKit 开发规范
 
-### 🎮 游戏开发（4 种）
+### 🎮 游戏开发（6 种）
 - Unity (C#) - Unity C# 游戏开发规范
 - Unreal Engine (C++) - Unreal Engine C++ 开发规范
 - Cocos Creator (TypeScript) - Cocos Creator TypeScript 开发
 - LayaBox (TypeScript) - LayaBox H5 游戏开发
+- Erlang 游戏服务器 - Erlang/OTP 分布式游戏服务器开发
+- Lua 游戏脚本 - Lua 游戏脚本开发（Unity/Cocos/引擎脚本）
 
 ### 🎨 CSS & 样式（3 种）
 - Tailwind + Next.js - Tailwind + Next.js 样式开发

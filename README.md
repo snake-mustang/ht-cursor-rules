@@ -1,6 +1,6 @@
 # HT Cursor Rules
 
-🚀 **一键安装，一键配置！** 为 Cursor AI 快速添加编程规则的 VSCode/Cursor 扩展。提供前端、后端、游戏研发、原生开发、测试等 28 种精选规则模板。
+🚀 **一键安装，一键配置！** 为 Cursor AI 快速添加编程规则的 VSCode/Cursor 扩展。提供前端、后端、游戏研发、原生开发、测试等 65 种精选规则模板。
 
 [![Version](https://img.shields.io/open-vsx/v/HUANGTONG/ht-cursor-rules)](https://open-vsx.org/extension/HUANGTONG/ht-cursor-rules)
 [![Downloads](https://img.shields.io/open-vsx/dt/HUANGTONG/ht-cursor-rules)](https://open-vsx.org/extension/HUANGTONG/ht-cursor-rules)
@@ -264,7 +264,7 @@
 - 💻 Language-Specific
 - 📂 Other
 
-**第二级**：63 种精选规则
+**第二级**：65 种精选规则
 - 涵盖主流技术栈和最新技术
 - 来自 GitHub **awesome-cursorrules** (35k+ stars) + **定制通用规则**
 - 包含完整开发规范

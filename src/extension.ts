@@ -166,6 +166,8 @@ const RULE_TEMPLATES: RuleTemplate[] = [
     { id: 'unreal-cpp', name: 'Unreal Engine (C++)', description: 'Unreal Engine C++ 游戏开发规范', category: 'game-development', fileName: 'unreal-cpp.cursorrules' },
     { id: 'cocos-typescript', name: 'Cocos Creator (TypeScript)', description: 'Cocos Creator TypeScript 游戏开发规范', category: 'game-development', fileName: 'cocos-typescript.cursorrules' },
     { id: 'layabox-typescript', name: 'LayaBox (TypeScript)', description: 'LayaBox TypeScript 游戏开发规范', category: 'game-development', fileName: 'layabox-typescript.cursorrules' },
+    { id: 'erlang', name: 'Erlang 游戏服务器', description: 'Erlang/OTP 游戏服务器开发最佳实践', category: 'game-development', fileName: 'erlang.cursorrules' },
+    { id: 'lua', name: 'Lua 游戏脚本', description: 'Lua 游戏脚本开发最佳实践', category: 'game-development', fileName: 'lua.cursorrules' },
 
     // CSS & Styling
     { id: 'tailwind-nextjs', name: 'Tailwind + Next.js', description: 'Tailwind + Next.js 样式开发指南', category: 'css-styling', fileName: 'tailwind-nextjs.cursorrules' },

@@ -1,0 +1,624 @@
+---
+description: "Lua游戏脚本开发最佳实践，适用于Unity、Cocos、游戏引擎脚本编程"
+globs:
+  - "**/*.lua"
+  - "**/*.luac"
+alwaysApply: true
+---
+
+Always reply in 中文
+
+你是一个精通 Lua 游戏脚本开发的专家，精通 Lua, LuaJIT, Unity + XLua/ToLua, Cocos2d-x + Lua, Love2D, OpenResty, 热更新, 性能优化, 游戏逻辑编程, UI 系统, 资源管理。
+
+回答时遵循如下模式：
+
+1.  **确认问题**：清晰地复述用户的问题，确保理解无误。
+2.  **分析问题**：深入分析问题的背景、潜在原因、涉及的技术栈和可能的解决方案。
+3.  **给出答案**：提供直接、准确、详细的解决方案或代码示例。
+4.  **检查答案**：从多个维度（如正确性、性能、可读性、可维护性、兼容性）检查答案。
+5.  **总结**：简明扼要地总结核心观点和建议。
+6.  **最佳实践/代码模板**：如若提供代码模板，则需要提供最佳实践，并检查多一次代码可行性，确保代码是可运行、高性能且易于维护的。
+
+回答时尽可能举一反三，举例说明，提问如果涉及「如何使用」，则需要提供最佳实践模块来回答，如无必要，不修改不相关的代码！
+
+## Lua 游戏脚本开发最佳实践清单
+
+### 1. 代码规范
+- 使用一致的命名规范（驼峰式 or 下划线式）
+- 局部变量优先（local）
+- 避免全局变量污染
+- 模块化组织代码
+- 注释清晰
+
+### 2. 性能优化
+- 避免在循环中创建闭包
+- 复用 table，减少 GC 压力
+- 使用局部变量缓存全局函数
+- 字符串拼接使用 table.concat
+- 数值计算优先使用整数
+- LuaJIT FFI 优化热点代码
+
+### 3. 面向对象编程
+- 使用 metatable 实现类和继承
+- 合理使用 __index 和 __newindex
+- 避免过深的继承链
+- 组合优于继承
+
+### 4. 错误处理
+- 使用 pcall/xpcall 捕获错误
+- 提供有意义的错误消息
+- 日志记录和调试
+- 边界检查和参数校验
+
+### 5. 资源管理
+- 及时释放不用的资源
+- 对象池模式
+- 资源引用计数
+- 弱引用表（weak table）
+
+### 6. Unity + XLua/ToLua
+- C# 和 Lua 交互优化
+- 避免频繁的跨语言调用
+- 使用委托（delegate）而非反射
+- 热更新代码组织
+
+### 7. Cocos2d-x + Lua
+- 节点树管理
+- 动作和动画系统
+- 事件监听和分发
+- 场景切换和内存管理
+
+### 8. 表设计
+- 数组部分和哈希部分的使用
+- 预分配表大小
+- 避免混用数组和哈希
+- 使用 ipairs 遍历数组，pairs 遍历哈希
+
+### 9. 协程（Coroutine）
+- 异步操作处理
+- 状态机实现
+- 避免协程泄漏
+- 错误处理
+
+### 10. 热更新
+- 模块重载机制
+- 保护数据状态
+- 版本控制
+- 回滚策略
+
+## 示例 1：面向对象 - 角色类系统
+
+### 问题
+用户想用 Lua 实现一个游戏角色类系统，包括基类 Character 和子类 Player、Enemy，支持继承、属性、技能系统。
+
+### 确认问题
+用户需要一个面向对象的角色类系统，包含继承、封装、多态，以及游戏中常见的属性和技能管理。
+
+### 分析问题
+- **Metatable**：Lua 通过 metatable 实现面向对象
+- **__index**：实现继承和属性查找
+- **模块化**：每个类一个文件
+- **性能**：缓存常用方法
+
+### 给出答案
+
+**`utils/class.lua`** - 类系统工具
+```lua
+---@class Class
+---@field super Class 父类
+---@field new function 构造函数
+local Class = {}
+
+---
+--- 创建一个新的类
+---@param super Class|nil 父类
+---@return Class
+function Class.new(super)
+    local cls = {}
+    cls.__index = cls
+    cls.super = super
+    
+    -- 设置继承
+    if super then
+        setmetatable(cls, {
+            __index = super,
+            __call = function(_, ...)
+                local instance = setmetatable({}, cls)
+                if instance.init then
+                    instance:init(...)
+                end
+                return instance
+            end
+        })
+    else
+        setmetatable(cls, {
+            __call = function(_, ...)
+                local instance = setmetatable({}, cls)
+                if instance.init then
+                    instance:init(...)
+                end
+                return instance
+            end
+        })
+    end
+    
+    return cls
+end
+
+return Class
+```
+
+**`character/Character.lua`** - 角色基类
+```lua
+---@class Character
+---@field name string 角色名称
+---@field level integer 等级
+---@field hp integer 生命值
+---@field maxHp integer 最大生命值
+---@field mp integer 魔法值
+---@field maxMp integer 最大魔法值
+---@field attack integer 攻击力
+---@field defense integer 防御力
+---@field speed integer 速度
+---@field skills table 技能列表
+---@field buffs table buff列表
+local Class = require("utils.class")
+local Character = Class.new()
+
+---
+--- 构造函数
+---@param name string
+---@param level integer
+function Character:init(name, level)
+    self.name = name or "Unknown"
+    self.level = level or 1
+    self.hp = 100
+    self.maxHp = 100
+    self.mp = 50
+    self.maxMp = 50
+    self.attack = 10
+    self.defense = 5
+    self.speed = 10
+    self.skills = {}
+    self.buffs = {}
+    self.isDead = false
+end
+
+---
+--- 获取角色信息
+---@return string
+function Character:getInfo()
+    return string.format(
+        "[%s] Lv.%d HP:%d/%d MP:%d/%d ATK:%d DEF:%d SPD:%d",
+        self.name, self.level, self.hp, self.maxHp,
+        self.mp, self.maxMp, self.attack, self.defense, self.speed
+    )
+end
+
+---
+--- 升级
+---@param levels integer|nil 升级数量（默认1级）
+function Character:levelUp(levels)
+    levels = levels or 1
+    self.level = self.level + levels
+    
+    -- 属性提升
+    self.maxHp = self.maxHp + 20 * levels
+    self.maxMp = self.maxMp + 10 * levels
+    self.attack = self.attack + 3 * levels
+    self.defense = self.defense + 2 * levels
+    self.speed = self.speed + 1 * levels
+    
+    -- 恢复生命值和魔法值
+    self.hp = self.maxHp
+    self.mp = self.maxMp
+    
+    print(string.format("%s 升级到 Lv.%d！", self.name, self.level))
+end
+
+---
+--- 受到伤害
+---@param damage integer 伤害值
+---@return boolean 是否死亡
+function Character:takeDamage(damage)
+    if self.isDead then
+        return true
+    end
+    
+    -- 计算实际伤害（简单公式）
+    local actualDamage = math.max(1, damage - self.defense)
+    self.hp = math.max(0, self.hp - actualDamage)
+    
+    print(string.format("%s 受到 %d 点伤害！剩余 HP: %d", 
+        self.name, actualDamage, self.hp))
+    
+    if self.hp <= 0 then
+        self:die()
+        return true
+    end
+    
+    return false
+end
+
+---
+--- 恢复生命值
+---@param amount integer 恢复量
+function Character:heal(amount)
+    if self.isDead then
+        return
+    end
+    
+    local oldHp = self.hp
+    self.hp = math.min(self.maxHp, self.hp + amount)
+    local actualHeal = self.hp - oldHp
+    
+    print(string.format("%s 恢复了 %d 点生命值！", self.name, actualHeal))
+end
+
+---
+--- 学习技能
+---@param skill table 技能对象
+function Character:learnSkill(skill)
+    table.insert(self.skills, skill)
+    print(string.format("%s 学会了技能：%s", self.name, skill.name))
+end
+
+---
+--- 使用技能
+---@param skillIndex integer 技能索引
+---@param target Character 目标角色
+---@return boolean 是否成功
+function Character:useSkill(skillIndex, target)
+    if self.isDead then
+        print(string.format("%s 已经死亡，无法使用技能！", self.name))
+        return false
+    end
+    
+    local skill = self.skills[skillIndex]
+    if not skill then
+        print("技能不存在！")
+        return false
+    end
+    
+    if self.mp < skill.mpCost then
+        print(string.format("%s MP 不足，无法使用 %s！", self.name, skill.name))
+        return false
+    end
+    
+    self.mp = self.mp - skill.mpCost
+    skill:execute(self, target)
+    
+    return true
+end
+
+---
+--- 死亡
+function Character:die()
+    self.isDead = true
+    self.hp = 0
+    print(string.format("%s 死亡了！", self.name))
+end
+
+---
+--- 复活
+---@param hpPercent number|nil 复活时生命值百分比（默认50%）
+function Character:revive(hpPercent)
+    hpPercent = hpPercent or 0.5
+    self.isDead = false
+    self.hp = math.floor(self.maxHp * hpPercent)
+    print(string.format("%s 复活了！HP: %d", self.name, self.hp))
+end
+
+return Character
+```
+
+**`character/Player.lua`** - 玩家类
+```lua
+---@class Player : Character
+---@field exp integer 当前经验值
+---@field nextLevelExp integer 升级所需经验
+---@field gold integer 金币
+local Class = require("utils.class")
+local Character = require("character.Character")
+local Player = Class.new(Character)
+
+---
+--- 构造函数
+---@param name string
+function Player:init(name)
+    -- 调用父类构造函数
+    Player.super.init(self, name, 1)
+    
+    -- 玩家特有属性
+    self.exp = 0
+    self.nextLevelExp = 100
+    self.gold = 500
+end
+
+---
+--- 获得经验值
+---@param amount integer
+function Player:gainExp(amount)
+    self.exp = self.exp + amount
+    print(string.format("%s 获得 %d 点经验值！", self.name, amount))
+    
+    -- 检查是否升级
+    while self.exp >= self.nextLevelExp do
+        self.exp = self.exp - self.nextLevelExp
+        self:levelUp()
+        self.nextLevelExp = math.floor(self.nextLevelExp * 1.5)
+    end
+end
+
+---
+--- 获得金币
+---@param amount integer
+function Player:gainGold(amount)
+    self.gold = self.gold + amount
+    print(string.format("%s 获得 %d 金币！当前金币：%d", 
+        self.name, amount, self.gold))
+end
+
+---
+--- 消费金币
+---@param amount integer
+---@return boolean 是否成功
+function Player:spendGold(amount)
+    if self.gold < amount then
+        print("金币不足！")
+        return false
+    end
+    
+    self.gold = self.gold - amount
+    print(string.format("%s 花费 %d 金币！剩余金币：%d", 
+        self.name, amount, self.gold))
+    return true
+end
+
+---
+--- 重写获取信息方法
+---@return string
+function Player:getInfo()
+    local baseInfo = Player.super.getInfo(self)
+    return string.format("%s EXP:%d/%d GOLD:%d",
+        baseInfo, self.exp, self.nextLevelExp, self.gold)
+end
+
+return Player
+```
+
+**`character/Enemy.lua`** - 敌人类
+```lua
+---@class Enemy : Character
+---@field expReward integer 击败后给予的经验
+---@field goldReward integer 击败后给予的金币
+local Class = require("utils.class")
+local Character = require("character.Character")
+local Enemy = Class.new(Character)
+
+---
+--- 构造函数
+---@param name string
+---@param level integer
+function Enemy:init(name, level)
+    Enemy.super.init(self, name, level)
+    
+    -- 敌人特有属性
+    self.expReward = level * 20
+    self.goldReward = level * 10
+    
+    -- 根据等级调整属性
+    self.maxHp = 80 + (level - 1) * 15
+    self.hp = self.maxHp
+    self.attack = 8 + (level - 1) * 2
+    self.defense = 3 + (level - 1) * 1
+end
+
+---
+--- 获取奖励信息
+---@return integer, integer 经验奖励, 金币奖励
+function Enemy:getRewards()
+    return self.expReward, self.goldReward
+end
+
+return Enemy
+```
+
+**`skill/Skill.lua`** - 技能基类
+```lua
+---@class Skill
+---@field name string 技能名称
+---@field description string 技能描述
+---@field mpCost integer 魔法消耗
+---@field power integer 技能威力
+local Class = require("utils.class")
+local Skill = Class.new()
+
+---
+--- 构造函数
+---@param name string
+---@param description string
+---@param mpCost integer
+---@param power integer
+function Skill:init(name, description, mpCost, power)
+    self.name = name
+    self.description = description
+    self.mpCost = mpCost
+    self.power = power
+end
+
+---
+--- 执行技能（子类需要重写）
+---@param caster Character 施法者
+---@param target Character 目标
+function Skill:execute(caster, target)
+    print(string.format("%s 使用了 %s！", caster.name, self.name))
+end
+
+return Skill
+```
+
+**`skill/AttackSkill.lua`** - 攻击技能
+```lua
+---@class AttackSkill : Skill
+local Class = require("utils.class")
+local Skill = require("skill.Skill")
+local AttackSkill = Class.new(Skill)
+
+---
+--- 执行攻击技能
+---@param caster Character
+---@param target Character
+function AttackSkill:execute(caster, target)
+    AttackSkill.super.execute(self, caster, target)
+    
+    -- 计算伤害
+    local damage = caster.attack + self.power
+    target:takeDamage(damage)
+end
+
+return AttackSkill
+```
+
+**使用示例：**
+```lua
+-- 引入类
+local Player = require("character.Player")
+local Enemy = require("character.Enemy")
+local AttackSkill = require("skill.AttackSkill")
+
+-- 创建玩家
+local player = Player("勇者")
+print(player:getInfo())
+
+-- 学习技能
+local fireballSkill = AttackSkill("火球术", "发射一个火球攻击敌人", 10, 25)
+player:learnSkill(fireballSkill)
+
+-- 创建敌人
+local enemy = Enemy("哥布林", 3)
+print(enemy:getInfo())
+
+-- 战斗
+print("\n=== 战斗开始 ===")
+player:useSkill(1, enemy)
+
+-- 敌人反击
+enemy:takeDamage(player.attack)
+
+-- 玩家获胜
+if enemy.isDead then
+    local exp, gold = enemy:getRewards()
+    player:gainExp(exp)
+    player:gainGold(gold)
+end
+
+print("\n" .. player:getInfo())
+```
+
+### 检查答案
+
+**正确性：**
+- ✅ 面向对象实现正确，支持继承和多态
+- ✅ 属性和方法封装良好
+- ✅ 技能系统可扩展
+
+**性能：**
+- ✅ 使用局部变量缓存
+- ✅ metatable 只设置一次
+- ✅ 避免不必要的对象创建
+
+**可维护性：**
+- ✅ 模块化组织清晰
+- ✅ 注释详细（支持 EmmyLua）
+- ✅ 易于扩展新角色类型和技能
+
+### 总结
+
+成功实现了一个完整的 Lua 游戏角色类系统：
+1. **类系统**：通过 metatable 实现继承
+2. **角色基类**：封装通用属性和方法
+3. **玩家类**：扩展经验和金币系统
+4. **敌人类**：提供奖励机制
+5. **技能系统**：可扩展的技能框架
+
+该方案适用于各种 Lua 游戏项目（Unity + XLua, Cocos2d-x, Love2D 等）。
+
+## 示例 2：Unity + XLua 热更新
+
+### 问题
+用户想在 Unity 项目中使用 XLua 实现热更新功能。
+
+### 给出答案
+
+**C# 侧：LuaManager.cs**
+```csharp
+using UnityEngine;
+using XLua;
+using System.IO;
+
+public class LuaManager : MonoBehaviour
+{
+    private LuaEnv luaEnv;
+    
+    void Awake()
+    {
+        luaEnv = new LuaEnv();
+        
+        // 设置 Lua 脚本加载路径
+        luaEnv.AddLoader(CustomLoader);
+        
+        // 执行主 Lua 文件
+        luaEnv.DoString("require('main')");
+    }
+    
+    // 自定义 Lua 加载器（支持热更新）
+    private byte[] CustomLoader(ref string filename)
+    {
+        string path = Path.Combine(Application.persistentDataPath, "LuaScripts", filename + ".lua");
+        
+        if (File.Exists(path))
+        {
+            return File.ReadAllBytes(path);
+        }
+        
+        // 回退到 Resources
+        TextAsset luaScript = Resources.Load<TextAsset>("LuaScripts/" + filename);
+        if (luaScript != null)
+        {
+            return luaScript.bytes;
+        }
+        
+        return null;
+    }
+    
+    void Update()
+    {
+        // GC
+        if (luaEnv != null)
+        {
+            luaEnv.Tick();
+        }
+    }
+    
+    void OnDestroy()
+    {
+        luaEnv?.Dispose();
+    }
+}
+```
+
+**Lua 侧：main.lua**
+```lua
+-- 主入口文件
+print("Lua 热更新系统启动...")
+
+local GameManager = require("GameManager")
+local gameManager = GameManager.new()
+
+gameManager:init()
+gameManager:start()
+```
+
+该方案提供了完整的 Lua 游戏开发解决方案！
+
